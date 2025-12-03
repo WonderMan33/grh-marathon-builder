@@ -130,6 +130,22 @@
       color: #eee;
       font-size: 0.9rem;
     }
+    .background-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 6px 12px;
+      margin-top: 6px;
+    }
+    .background-options label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .background-options input {
+      transform: scale(1.1);
+    }
     @media (max-width: 600px) {
       h1 {
         font-size: 1.4rem;
@@ -141,10 +157,10 @@
   <div class="container">
     <h1>Golden Radio Hour – Marathon Builder</h1>
     <div class="top-note">
-      Choose your favorite programs, pick a marathon length, and send Wade a custom marathon request. He’ll build the final lineup from his library.
+      Choose your favorite programs, pick a marathon length, and send Wade a custom marathon request. Your playlist will be built from the library and streamed on the channel.
     </div>
 
-    <!-- 1. Show picker -->
+    <!-- 1. Program picker -->
     <div class="card">
       <h2>1. Choose Programs</h2>
       <div id="showsContainer" class="shows-grid"></div>
@@ -167,9 +183,42 @@
       </div>
     </div>
 
-    <!-- 3. Sender + title + send -->
+    <!-- 3. Background style -->
     <div class="card">
-      <h2>3. Send Your Request</h2>
+      <h2>3. Choose Background Style</h2>
+      <div class="small">
+        This helps Wade decide what visual to use behind your marathon.
+      </div>
+      <div class="background-options" id="backgroundOptions">
+        <label>
+          <input type="radio" name="background" value="Dark screen only" checked />
+          <span>Dark screen only</span>
+        </label>
+        <label>
+          <input type="radio" name="background" value="Fireplace / cozy room" />
+          <span>Fireplace / cozy room</span>
+        </label>
+        <label>
+          <input type="radio" name="background" value="Rainy night window" />
+          <span>Rainy night window</span>
+        </label>
+        <label>
+          <input type="radio" name="background" value="Vintage theater ambience" />
+          <span>Vintage theater ambience</span>
+        </label>
+        <label>
+          <input type="radio" name="background" value="Starfield / space loop" />
+          <span>Starfield / space loop</span>
+        </label>
+      </div>
+      <div class="small" style="margin-top:6px;">
+        Final visuals may vary based on which background videos Wade has available.
+      </div>
+    </div>
+
+    <!-- 4. Sender + title + send -->
+    <div class="card">
+      <h2>4. Send Your Request</h2>
 
       <div class="small">Your name or nickname (optional):</div>
       <input id="senderName" type="text" placeholder="Example: Mary from Seattle" />
@@ -188,7 +237,7 @@
       <textarea id="playlistOutput"></textarea>
 
       <div class="small">
-        “Send to Wade” emails your request directly to him, including your program choices, target length, title idea, and the internal playlist.
+        “Send to Wade” emails your request directly to him, including your programs, length, background choice, title idea, and the internal playlist. Episodes won’t show on this page yet while the builder is in testing.
       </div>
     </div>
   </div>
@@ -200,6 +249,7 @@
     <input type="hidden" name="target_hours" id="hoursField">
     <input type="hidden" name="sender_name" id="senderNameField">
     <input type="hidden" name="user_title" id="userTitleField">
+    <input type="hidden" name="background_choice" id="backgroundField">
   </form>
 
   <script>
@@ -216,8 +266,9 @@
     const hoursField = document.getElementById("hoursField");
     const senderNameField = document.getElementById("senderNameField");
     const userTitleField = document.getElementById("userTitleField");
+    const backgroundField = document.getElementById("backgroundField");
 
-    // Clean program names you asked for
+    // Clean program names you want users to see
     const allowedShows = [
       "BBC Collection",
       "Beyond Midnight",
@@ -297,46 +348,6 @@
       "Yours Truly, Johnny Dollar (Robert Readick)"
     ];
 
-    // Map clean names -> actual show labels in your JSON
-    const aliasGroups = {
-      "BBC Collection": [
-        "BBC Christmas Stories",
-        "BBC Radio",
-        "BBC Stories"
-      ],
-      "CBS Radio Mystery Theater": [
-        "CBS Radio Mystery Theater",
-        "CBSRMT"
-      ],
-      "Sam Spade": [
-        "Sam Spade",
-        "Spade"
-      ],
-      "Let George Do It": [
-        "Let George Do It"
-      ],
-      "Let George Sherlock Holmes Mash": [
-        "Let George Sherlock Holmes Mash"
-      ],
-      "Yours Truly, Johnny Dollar": [
-        "Yours Truly, Johnny Dollar"
-      ],
-      "Yours Truly, Johnny Dollar (Bob Bailey)": [
-        "Yours Truly, Johnny Dollar (Bob Bailey)",
-        "Bob Bailey As Yours Truly",
-        "Bob Bailey Singles"
-      ],
-      "Yours Truly, Johnny Dollar (Edmond O'Brien)": [
-        "Yours Truly, Johnny Dollar (Edmond O'Brien)",
-        "Edmond Obrien"
-      ],
-      "Yours Truly, Johnny Dollar (Mandel Kramer)": [
-        "Yours Truly, Johnny Dollar (Mandel Kramer)",
-        "Mandel Kramer"
-      ]
-      // All other clean names are assumed to match JSON show names directly
-    };
-
     function setStatus(msg) {
       statusElem.textContent = msg || "";
     }
@@ -354,6 +365,79 @@
       const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
       const s = String(sec % 60).padStart(2, "0");
       return `${h}:${m}:${s}`;
+    }
+
+    function normalize(str) {
+      return (str || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    // Check if a single episode matches any of the selected clean program names
+    function epMatchesSelection(ep, selectedCleanNames) {
+      const showNorm = normalize(ep.show);
+      const titleNorm = normalize(ep.episode_title);
+      const pathNorm = normalize(ep.file_path || ep.path || "");
+
+      for (const cleanName of selectedCleanNames) {
+        const cleanNorm = normalize(cleanName);
+
+        // If everything is empty, skip
+        if (!showNorm && !titleNorm && !pathNorm) continue;
+
+        // General contains check
+        if (
+          (showNorm && showNorm.includes(cleanNorm)) ||
+          (titleNorm && titleNorm.includes(cleanNorm)) ||
+          (pathNorm && pathNorm.includes(cleanNorm))
+        ) {
+          return true;
+        }
+
+        // Special handling for Johnny Dollar variants
+        if (cleanNorm.startsWith("yours truly johnny dollar")) {
+          const base = "yours truly johnny dollar";
+          const actorPart = cleanNorm.replace(base, "").trim(); // e.g. "bob bailey"
+
+          const hasBase =
+            (showNorm && showNorm.includes(base)) ||
+            (titleNorm && titleNorm.includes(base)) ||
+            (pathNorm && pathNorm.includes(base));
+
+          if (!hasBase) continue;
+
+          if (!actorPart) {
+            // Any Johnny Dollar
+            return true;
+          } else {
+            // Require actor last name too
+            const actorTokens = actorPart.split(" ").filter(Boolean);
+            const lastName = actorTokens[actorTokens.length - 1]; // bailey, lund, etc.
+            if (
+              (showNorm && showNorm.includes(lastName)) ||
+              (titleNorm && titleNorm.includes(lastName)) ||
+              (pathNorm && pathNorm.includes(lastName))
+            ) {
+              return true;
+            }
+          }
+        }
+
+        // BBC Collection: catch anything with "bbc"
+        if (cleanNorm === "bbc collection") {
+          if (
+            showNorm.includes("bbc") ||
+            titleNorm.includes("bbc") ||
+            pathNorm.includes("bbc")
+          ) {
+            return true;
+          }
+        }
+      }
+
+      return false;
     }
 
     function buildShowsUI() {
@@ -382,13 +466,9 @@
       ).map(cb => cb.value);
     }
 
-    function getUnderlyingShowNames(selectedCleanNames) {
-      const result = new Set();
-      selectedCleanNames.forEach(name => {
-        const aliases = aliasGroups[name] || [name];
-        aliases.forEach(a => result.add(a));
-      });
-      return Array.from(result);
+    function getSelectedBackground() {
+      const checked = document.querySelector("input[name='background']:checked");
+      return checked ? checked.value : "Dark screen only";
     }
 
     function buildMarathon() {
@@ -399,10 +479,7 @@
         return;
       }
 
-      const underlyingNames = getUnderlyingShowNames(selectedClean);
-
-      // Filter library episodes by mapped names
-      const pool = library.filter(ep => underlyingNames.includes(ep.show));
+      const pool = library.filter(ep => epMatchesSelection(ep, selectedClean));
       if (pool.length === 0) {
         setStatus("No episodes found for the selected programs.");
         playlistOutput.value = "";
@@ -415,9 +492,7 @@
       let total = 0;
 
       for (const ep of pool) {
-        if (total + ep.duration_seconds > targetSeconds + 5 * 60) {
-          continue;
-        }
+        if (total + ep.duration_seconds > targetSeconds + 5 * 60) continue;
         chosen.push(ep);
         total += ep.duration_seconds;
         if (total >= targetSeconds) break;
@@ -472,18 +547,20 @@
       const hours = activeBtn ? activeBtn.dataset.hours : "12";
       const senderName = document.getElementById("senderName").value.trim();
       const userTitle = document.getElementById("userTitle").value.trim();
+      const backgroundChoice = getSelectedBackground();
 
       playlistField.value = text;
       showsField.value = selectedClean.join(", ");
       hoursField.value = hours;
       senderNameField.value = senderName;
       userTitleField.value = userTitle;
+      backgroundField.value = backgroundChoice;
 
       setStatus("Sending playlist to Wade...");
       sendForm.submit();
     });
 
-    // Load library.json (the one you just pushed to GitHub)
+    // Load library.json from the same folder
     fetch("library.json")
       .then(r => r.json())
       .then(data => {
