@@ -67,6 +67,9 @@
     }
     .actions {
       margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .actions button {
       padding: 10px 18px;
@@ -74,7 +77,6 @@
       border: none;
       font-size: 0.95rem;
       cursor: pointer;
-      margin-right: 8px;
     }
     #buildBtn {
       background: #ffd54f;
@@ -84,6 +86,15 @@
     #clearBtn {
       background: #333;
       color: #eee;
+    }
+    #copyBtn {
+      background: #444;
+      color: #eee;
+    }
+    #sendBtn {
+      background: #4caf50;
+      color: #111;
+      font-weight: 600;
     }
     #playlistOutput {
       width: 100%;
@@ -112,10 +123,6 @@
       font-size: 0.85rem;
       color: #ccc;
     }
-    #copyBtn {
-      background: #444;
-      color: #eee;
-    }
     @media (max-width: 600px) {
       h1 {
         font-size: 1.4rem;
@@ -127,7 +134,7 @@
   <div class="container">
     <h1>Golden Radio Hour – Marathon Builder</h1>
     <div class="top-note">
-      Select your favorite shows and let this page build a randomized marathon playlist.
+      Choose your favorite shows, pick a marathon length, and let this tool build a randomized playlist from Wade’s full episode library.
     </div>
 
     <div class="card">
@@ -136,7 +143,7 @@
         <!-- checkboxes inserted by JS -->
       </div>
       <div class="small" style="margin-top:6px;">
-        Tip: Older listeners can simply pick a few favorite shows and hit "Create Marathon".
+        Select one or more shows you want included in your custom marathon.
       </div>
     </div>
 
@@ -149,26 +156,32 @@
         <button type="button" data-hours="12" class="active">12 hours</button>
       </div>
       <div class="small">
-        You can adjust the length later on your end if you want a different total.
+        The builder will try to get as close to this length as possible.
       </div>
     </div>
 
     <div class="card">
-      <h2>3. Build Playlist</h2>
+      <h2>3. Build & Send Playlist</h2>
       <div class="actions">
         <button id="buildBtn">Create My Marathon</button>
         <button id="clearBtn">Clear Selection</button>
+        <button id="copyBtn">Copy Playlist</button>
+        <button id="sendBtn">Send to Wade</button>
       </div>
       <div id="status"></div>
       <textarea id="playlistOutput" placeholder="Your playlist will appear here..."></textarea>
-      <div class="actions">
-        <button id="copyBtn">Copy Playlist</button>
-      </div>
       <div class="small">
-        Copy this text and send it to Wade (email, form, DM, etc.). He’ll turn it into a real stream.
+        You can copy the playlist for your own records, and “Send to Wade” will email it directly to him for scheduling.
       </div>
     </div>
   </div>
+
+  <!-- Hidden form for sending playlist to Wade via Formspree -->
+  <form id="sendForm" action="https://formspree.io/f/mqarbnyg" method="POST" style="display:none;">
+    <input type="hidden" name="playlist" id="playlistField">
+    <input type="hidden" name="shows_selected" id="showsField">
+    <input type="hidden" name="target_hours" id="hoursField">
+  </form>
 
   <script>
     let library = [];
@@ -199,6 +212,7 @@
     }
 
     function buildShowsUI() {
+      // Dedupe show names so you don't see repeats in the chooser.
       const set = new Set(library.map(e => e.show));
       const sorted = [...set].sort((a, b) => a.localeCompare(b));
       allShows = sorted;
@@ -253,7 +267,6 @@
 
       for (const ep of pool) {
         if (total + ep.duration_seconds > targetSeconds + 5 * 60) {
-          // stop if we’d overshoot by more than 5 minutes
           continue;
         }
         chosen.push(ep);
@@ -312,6 +325,25 @@
       } catch (e) {
         setStatus("Could not copy automatically. Select and copy manually.");
       }
+    });
+
+    // Send playlist to Wade via hidden Formspree form
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      const text = playlistOutput.value.trim();
+      if (!text) {
+        setStatus("Nothing to send yet. Create a marathon first.");
+        return;
+      }
+      const selectedShows = getSelectedShows();
+      const activeBtn = document.querySelector(".target-buttons button.active");
+      const hours = activeBtn ? activeBtn.dataset.hours : "12";
+
+      document.getElementById("playlistField").value = text;
+      document.getElementById("showsField").value = selectedShows.join(", ");
+      document.getElementById("hoursField").value = hours;
+
+      setStatus("Sending playlist to Wade...");
+      document.getElementById("sendForm").submit();
     });
 
     // Load library.json
