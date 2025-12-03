@@ -87,10 +87,6 @@
       background: #333;
       color: #eee;
     }
-    #copyBtn {
-      background: #444;
-      color: #eee;
-    }
     #sendBtn {
       background: #4caf50;
       color: #111;
@@ -108,6 +104,7 @@
       font-family: Consolas, Menlo, monospace;
       font-size: 0.9rem;
       resize: vertical;
+      display: none; /* Hides the playlist box from users */
     }
     .small {
       font-size: 0.8rem;
@@ -144,7 +141,7 @@
   <div class="container">
     <h1>Golden Radio Hour – Marathon Builder</h1>
     <div class="top-note">
-      Choose your favorite shows, pick a marathon length, and let this tool build a randomized playlist from Wade’s full episode library.
+      Choose your favorite shows, pick a marathon length, and send Wade a custom marathon request. He'll handle the exact episode lineup on his end.
     </div>
 
     <div class="card">
@@ -171,7 +168,7 @@
     </div>
 
     <div class="card">
-      <h2>3. Build & Send Playlist</h2>
+      <h2>3. Send Your Request</h2>
 
       <div class="small">Your name or nickname (optional):</div>
       <input id="senderName" type="text" placeholder="Example: Mary from Seattle" />
@@ -179,13 +176,13 @@
       <div class="actions">
         <button id="buildBtn">Create My Marathon</button>
         <button id="clearBtn">Clear Selection</button>
-        <button id="copyBtn">Copy Playlist</button>
         <button id="sendBtn">Send to Wade</button>
       </div>
       <div id="status"></div>
+      <!-- Hidden playlist textarea (used internally, but not shown to visitors) -->
       <textarea id="playlistOutput" placeholder="Your playlist will appear here..."></textarea>
       <div class="small">
-        You can copy the playlist for your own records, and “Send to Wade” will email it directly to him for scheduling.
+        When you click “Send to Wade,” your marathon request is emailed directly to him with the internal playlist details. He’ll build the final stream from his library.
       </div>
     </div>
   </div>
@@ -203,8 +200,7 @@
     let allShows = [];
     let targetSeconds = 12 * 3600; // default 12 hours
 
-    // Whitelist of shows that should appear in the picker,
-    // filtered down to only shows that actually have MP3s in your library_with_paths.csv
+    // Final whitelist of shows (only ones you want exposed)
     const allowedShows = [
       "BBC Christmas Stories",
       "BBC Radio",
@@ -384,8 +380,9 @@
       });
       out += `\nTotal duration: ${secondsToHMS(running)}\n`;
 
+      // Still store internally so it can be emailed to you
       playlistOutput.value = out.trim();
-      setStatus(`Built playlist with ${chosen.length} episodes (~${secondsToHMS(running)})`);
+      setStatus(`Marathon request created (~${secondsToHMS(running)}). Click "Send to Wade" to submit it.`);
     }
 
     // Target length buttons
@@ -406,20 +403,6 @@
       showsContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
       playlistOutput.value = "";
       setStatus("");
-    });
-
-    document.getElementById("copyBtn").addEventListener("click", async () => {
-      const text = playlistOutput.value.trim();
-      if (!text) {
-        setStatus("Nothing to copy yet.");
-        return;
-      }
-      try {
-        await navigator.clipboard.writeText(text);
-        setStatus("Playlist copied to clipboard.");
-      } catch (e) {
-        setStatus("Could not copy automatically. Select and copy manually.");
-      }
     });
 
     // Send playlist to Wade via hidden Formspree form
