@@ -93,9 +93,9 @@
       font-weight: 600;
     }
     #playlistOutput {
+      display: none; /* Hidden output */
       width: 100%;
       min-height: 180px;
-      margin-top: 8px;
       background: #0d0d0d;
       color: #eee;
       border-radius: 6px;
@@ -104,7 +104,6 @@
       font-family: Consolas, Menlo, monospace;
       font-size: 0.9rem;
       resize: vertical;
-      display: none; /* Hides the playlist box from users */
     }
     .small {
       font-size: 0.8rem;
@@ -141,19 +140,19 @@
   <div class="container">
     <h1>Golden Radio Hour – Marathon Builder</h1>
     <div class="top-note">
-      Choose your favorite shows, pick a marathon length, and send Wade a custom marathon request. He'll handle the exact episode lineup on his end.
+      Choose your favorite shows, pick a marathon length, and send a custom marathon request. Wade will build the final playlist based on your selections.
     </div>
 
+    <!-- Show picker -->
     <div class="card">
       <h2>1. Choose Shows</h2>
-      <div id="showsContainer" class="shows-grid">
-        <!-- checkboxes inserted by JS -->
-      </div>
+      <div id="showsContainer" class="shows-grid"></div>
       <div class="small" style="margin-top:6px;">
         Select one or more shows you want included in your custom marathon.
       </div>
     </div>
 
+    <!-- Length picker -->
     <div class="card">
       <h2>2. Choose Target Length</h2>
       <div class="target-buttons">
@@ -167,6 +166,7 @@
       </div>
     </div>
 
+    <!-- Request sender -->
     <div class="card">
       <h2>3. Send Your Request</h2>
 
@@ -179,15 +179,17 @@
         <button id="sendBtn">Send to Wade</button>
       </div>
       <div id="status"></div>
-      <!-- Hidden playlist textarea (used internally, but not shown to visitors) -->
-      <textarea id="playlistOutput" placeholder="Your playlist will appear here..."></textarea>
+
+      <!-- Hidden playlist output -->
+      <textarea id="playlistOutput"></textarea>
+
       <div class="small">
-        When you click “Send to Wade,” your marathon request is emailed directly to him with the internal playlist details. He’ll build the final stream from his library.
+        “Send to Wade” emails your request directly to him with all internal details. He will assemble the final marathon.
       </div>
     </div>
   </div>
 
-  <!-- Hidden form for sending playlist to Wade via Formspree -->
+  <!-- Formspree -->
   <form id="sendForm" action="https://formspree.io/f/mqarbnyg" method="POST" style="display:none;">
     <input type="hidden" name="playlist" id="playlistField">
     <input type="hidden" name="shows_selected" id="showsField">
@@ -198,95 +200,49 @@
   <script>
     let library = [];
     let allShows = [];
-    let targetSeconds = 12 * 3600; // default 12 hours
+    let targetSeconds = 12 * 3600;
 
-    // Final whitelist of shows (only ones you want exposed)
+    /* YOUR APPROVED FULL SHOW LIST */
     const allowedShows = [
-      "BBC Christmas Stories",
-      "BBC Radio",
-      "BBC Stories",
-      "Beyond Midnight",
-      "Bob Bailey As Yours Truly",
-      "Bob Bailey Singles",
-      "Box 13",
-      "Broadway Is My Beat",
-      "Casey Crime Photographer",
-      "CBC Mystery Theatre",
-      "CBS Radio Workshop",
-      "CBSRMT",
-      "Crime Classics",
-      "Crisis",
-      "Damon Runyon",
-      "Dangerous Assignment",
-      "Dangerously Yours",
-      "Dark Fantasy",
-      "Dimension X",
-      "Dr. Christian",
-      "Dragnet",
-      "Fibber McGee and Molly",
-      "Fort Laramie",
-      "Frontier Gentleman",
-      "Gunsmoke",
-      "Have Gun Will Travel",
-      "Inner Sanctum Mysteries",
-      "Jeff Regan",
-      "Let George Do It",
-      "Lights Out",
-      "Lux Radio Theatre",
-      "Michael Shayne",
-      "Molle Mystery Theater",
-      "Mystery Is My Hobby",
-      "Nero Wolfe",
-      "Nick Carter, Master Detective",
-      "Obsession",
-      "Philip Marlowe",
-      "Philo Vance",
-      "Ray Bradbury Theater",
-      "Red Skelton Show",
-      "Rogues Gallery",
-      "Roy Rogers Show",
-      "Sam Spade",
-      "Screen Directors Playhouse",
-      "Screen Guild Theater",
-      "Sears Radio Theater",
-      "Sherlock & Wolfe",
-      "Sherlock Holmes",
-      "Spade",
-      "Stories of Sherlock Holmes",
-      "Strange Wills",
-      "Summer Spook Radio Dramas",
-      "Suspense",
-      "Tales of the Texas Rangers",
-      "The Falcon",
-      "The Great Gildersleeve",
-      "The Jack Benny Program",
-      "The Mysterious Traveler",
-      "Theater Five",
-      "This Is Your FBI",
-      "Twilight Zone Radio Dramas",
-      "Vincent Price as The Saint",
-      "Weird Circle",
-      "X Minus One",
-      "Yours Truly, Johnny Dollar",
-      "Yours Truly, Johnny Dollar (Bob Bailey)",
-      "Yours Truly, Johnny Dollar (Edmond O'Brien)",
-      "Yours Truly, Johnny Dollar (John Lund)",
+      "BBC Christmas Stories","BBC Radio","BBC Stories","Beyond Midnight",
+      "Bob Bailey As Yours Truly","Bob Bailey Singles","Boston Blackie","Box 13",
+      "Broadway Is My Beat","Candy Matson","Casey Crime Photographer","CBC Mystery Theatre",
+      "CBS Radio Mystery Theater","CBS Radio Workshop","CBSRMT","Crime Classics",
+      "Crisis","Damon Runyon","Dangerous Assignment","Dangerously Yours","Dark Fantasy",
+      "Dimension X","Dr. Christian","Dr. Kildare","Dragnet","Edmond Obrien",
+      "Father Knows Best","Fibber McGee and Molly","Fort Laramie","Frontier Gentleman",
+      "Gunsmoke","Have Gun Will Travel","Horror Stories","Inner Sanctum Mysteries",
+      "Jeff Regan","Let George Do It","Let George Sherlock Holmes Mash","Lights Out",
+      "Lux Radio Theatre","Man Called X","Mandel Kramer","Michael Shayne",
+      "Molle Mystery Theater","Mystery Is My Hobby","Nero Wolfe",
+      "Nick Carter, Master Detective","Obsession","Pat Novak, For Hire",
+      "Philip Marlowe","Philo Vance","Ray Bradbury Theater","Red Skelton Show",
+      "Rogues Gallery","Roy Rogers Show","Sam Spade","Screen Directors Playhouse",
+      "Screen Guild Theater","Sears Radio Theater","Sherlock & Wolfe","Sherlock Holmes",
+      "Spade","Stories of Sherlock Holmes","Strange Wills","Summer Spook Radio Dramas",
+      "Suspense","Tales of the Texas Rangers","The Falcon","The Great Gildersleeve",
+      "The Jack Benny Program","The Mysterious Traveler","The New Adventures of Sherlock Holmes",
+      "The Saint","The Whistler","Theater Five","This Is Your FBI",
+      "Twilight Zone Radio Dramas","Vincent Price as The Saint",
+      "Weird Circle","X Minus One",
+      "Yours Truly, Johnny Dollar","Yours Truly, Johnny Dollar (Bob Bailey)",
+      "Yours Truly, Johnny Dollar (Edmond O'Brien)","Yours Truly, Johnny Dollar (John Lund)",
       "Yours Truly, Johnny Dollar (Mandel Kramer)",
       "Yours Truly, Johnny Dollar (Robert Readick)"
     ];
 
     const showsContainer = document.getElementById("showsContainer");
-    const statusElem = document.getElementById("status");
     const playlistOutput = document.getElementById("playlistOutput");
+    const statusElem = document.getElementById("status");
 
     function setStatus(msg) {
       statusElem.textContent = msg || "";
     }
 
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        [arr[i], arr[j]] = [arr[j], arr[i]];
       }
     }
 
@@ -299,145 +255,110 @@
     }
 
     function buildShowsUI() {
-      // Only include shows that are in the whitelist
       const set = new Set(
-        library
-          .map(e => e.show)
-          .filter(show => allowedShows.includes(show))
+        library.map(e => e.show).filter(show => allowedShows.includes(show))
       );
       const sorted = [...set].sort((a, b) => a.localeCompare(b));
-      allShows = sorted;
-
       showsContainer.innerHTML = "";
+
       sorted.forEach(show => {
         const id = "show_" + show.replace(/\W+/g, "_");
+
         const label = document.createElement("label");
         label.className = "show-item";
 
         const cb = document.createElement("input");
         cb.type = "checkbox";
-        cb.id = id;
         cb.value = show;
 
         const span = document.createElement("span");
         span.textContent = show;
 
-        label.appendChild(cb);
-        label.appendChild(span);
-        showsContainer.appendChild(label);
+        label.append(cb, span);
+        showsContainer.append(label);
       });
     }
 
     function getSelectedShows() {
-      const checked = showsContainer.querySelectorAll("input[type=checkbox]:checked");
-      const values = [];
-      checked.forEach(cb => values.push(cb.value));
-      return values;
+      return [...showsContainer.querySelectorAll("input:checked")].map(x => x.value);
     }
 
     function buildMarathon() {
       const selectedShows = getSelectedShows();
-      if (selectedShows.length === 0) {
+      if (!selectedShows.length) {
         setStatus("Please select at least one show.");
-        playlistOutput.value = "";
         return;
       }
 
-      // Filter library by selected shows
-      const pool = library.filter(ep => selectedShows.includes(ep.show));
-      if (pool.length === 0) {
-        setStatus("No episodes found for the selected shows.");
-        playlistOutput.value = "";
+      const pool = library.filter(e => selectedShows.includes(e.show));
+      if (!pool.length) {
+        setStatus("No episodes found for selected shows.");
         return;
       }
 
       shuffle(pool);
 
-      const chosen = [];
       let total = 0;
+      let chosen = [];
 
       for (const ep of pool) {
-        if (total + ep.duration_seconds > targetSeconds + 5 * 60) {
-          continue;
-        }
+        if (total + ep.duration_seconds > targetSeconds + 300) continue;
         chosen.push(ep);
         total += ep.duration_seconds;
         if (total >= targetSeconds) break;
       }
 
-      if (chosen.length === 0) {
-        setStatus("Could not fit any episodes into the selected length.");
-        playlistOutput.value = "";
+      if (!chosen.length) {
+        setStatus("Could not fit any episodes.");
         return;
       }
 
-      let out = "";
-      let running = 0;
-      chosen.forEach((ep, idx) => {
-        const start = secondsToHMS(running);
-        out += `${idx + 1}. ${start} ${ep.show} - ${ep.episode_title}\n`;
-        running += ep.duration_seconds;
-      });
-      out += `\nTotal duration: ${secondsToHMS(running)}\n`;
+      let txt = "";
+      let run = 0;
 
-      // Still store internally so it can be emailed to you
-      playlistOutput.value = out.trim();
-      setStatus(`Marathon request created (~${secondsToHMS(running)}). Click "Send to Wade" to submit it.`);
+      chosen.forEach((ep, i) => {
+        txt += `${i+1}. ${secondsToHMS(run)} ${ep.show} - ${ep.episode_title}\n`;
+        run += ep.duration_seconds;
+      });
+
+      txt += `\nTotal duration: ${secondsToHMS(run)}`;
+
+      playlistOutput.value = txt;
+      setStatus("Playlist created. Click Send to Wade.");
     }
 
-    // Target length buttons
-    document.querySelectorAll(".target-buttons button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".target-buttons button").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const hours = parseInt(btn.dataset.hours, 10) || 12;
-        targetSeconds = hours * 3600;
-      });
-    });
-
-    document.getElementById("buildBtn").addEventListener("click", () => {
-      buildMarathon();
-    });
-
-    document.getElementById("clearBtn").addEventListener("click", () => {
-      showsContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
+    document.getElementById("buildBtn").onclick = buildMarathon;
+    document.getElementById("clearBtn").onclick = () => {
+      showsContainer.querySelectorAll("input").forEach(i => i.checked = false);
       playlistOutput.value = "";
       setStatus("");
-    });
+    };
 
-    // Send playlist to Wade via hidden Formspree form
-    document.getElementById("sendBtn").addEventListener("click", () => {
-      const text = playlistOutput.value.trim();
-      if (!text) {
-        setStatus("Nothing to send yet. Create a marathon first.");
-        return;
-      }
-      const selectedShows = getSelectedShows();
-      const activeBtn = document.querySelector(".target-buttons button.active");
-      const hours = activeBtn ? activeBtn.dataset.hours : "12";
-      const senderName = document.getElementById("senderName").value.trim();
+    document.getElementById("sendBtn").onclick = () => {
+      const txt = playlistOutput.value.trim();
+      if (!txt) return setStatus("Nothing to send yet.");
 
-      document.getElementById("playlistField").value = text;
-      document.getElementById("showsField").value = selectedShows.join(", ");
-      document.getElementById("hoursField").value = hours;
-      document.getElementById("senderNameField").value = senderName;
+      const selected = getSelectedShows().join(", ");
+      const hours = document.querySelector(".target-buttons .active")?.dataset.hours || "12";
+      const name = document.getElementById("senderName").value.trim();
 
-      setStatus("Sending playlist to Wade...");
-      document.getElementById("sendForm").submit();
-    });
+      playlistField.value = txt;
+      showsField.value = selected;
+      hoursField.value = hours;
+      senderNameField.value = name;
 
-    // Load library.json
+      setStatus("Sending request...");
+      sendForm.submit();
+    };
+
     fetch("library.json")
       .then(r => r.json())
       .then(data => {
-        library = data || [];
-        setStatus(`Library loaded. Episodes available: ${library.length}`);
+        library = data;
+        setStatus(`Library loaded (${library.length} episodes).`);
         buildShowsUI();
       })
-      .catch(err => {
-        console.error(err);
-        setStatus("Error loading library.json. Make sure it’s in the same folder.");
-      });
+      .catch(() => setStatus("Error loading library.json."));
   </script>
 </body>
 </html>
