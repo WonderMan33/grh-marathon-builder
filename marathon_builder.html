@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Golden Radio Hour – Marathon Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #111;
+      color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.25rem;
+    }
+    h2 {
+      font-size: 1.2rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .card {
+      background: #1b1b1b;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+      border: 1px solid #333;
+    }
+    .shows-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 6px 14px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+    label.show-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    label.show-item input {
+      transform: scale(1.2);
+    }
+    .target-buttons button {
+      margin: 4px 6px 4px 0;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #555;
+      background: #222;
+      color: #eee;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .target-buttons button.active {
+      border-color: #ffd54f;
+      background: #333;
+    }
+    .actions {
+      margin-top: 12px;
+    }
+    .actions button {
+      padding: 10px 18px;
+      border-radius: 6px;
+      border: none;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+    #buildBtn {
+      background: #ffd54f;
+      color: #111;
+      font-weight: 600;
+    }
+    #clearBtn {
+      background: #333;
+      color: #eee;
+    }
+    #playlistOutput {
+      width: 100%;
+      min-height: 180px;
+      margin-top: 8px;
+      background: #0d0d0d;
+      color: #eee;
+      border-radius: 6px;
+      border: 1px solid #333;
+      padding: 10px;
+      font-family: Consolas, Menlo, monospace;
+      font-size: 0.9rem;
+      resize: vertical;
+    }
+    .small {
+      font-size: 0.8rem;
+      color: #aaa;
+    }
+    .top-note {
+      font-size: 0.85rem;
+      color: #bbb;
+      margin-bottom: 0.5rem;
+    }
+    #status {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: #ccc;
+    }
+    #copyBtn {
+      background: #444;
+      color: #eee;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Golden Radio Hour – Marathon Builder</h1>
+    <div class="top-note">
+      Select your favorite shows and let this page build a randomized marathon playlist.
+    </div>
+
+    <div class="card">
+      <h2>1. Choose Shows</h2>
+      <div id="showsContainer" class="shows-grid">
+        <!-- checkboxes inserted by JS -->
+      </div>
+      <div class="small" style="margin-top:6px;">
+        Tip: Older listeners can simply pick a few favorite shows and hit "Create Marathon".
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2. Choose Target Length</h2>
+      <div class="target-buttons">
+        <button type="button" data-hours="3">3 hours</button>
+        <button type="button" data-hours="6">6 hours</button>
+        <button type="button" data-hours="9">9 hours</button>
+        <button type="button" data-hours="12" class="active">12 hours</button>
+      </div>
+      <div class="small">
+        You can adjust the length later on your end if you want a different total.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3. Build Playlist</h2>
+      <div class="actions">
+        <button id="buildBtn">Create My Marathon</button>
+        <button id="clearBtn">Clear Selection</button>
+      </div>
+      <div id="status"></div>
+      <textarea id="playlistOutput" placeholder="Your playlist will appear here..."></textarea>
+      <div class="actions">
+        <button id="copyBtn">Copy Playlist</button>
+      </div>
+      <div class="small">
+        Copy this text and send it to Wade (email, form, DM, etc.). He’ll turn it into a real stream.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let library = [];
+    let allShows = [];
+    let targetSeconds = 12 * 3600; // default 12 hours
+
+    const showsContainer = document.getElementById("showsContainer");
+    const statusElem = document.getElementById("status");
+    const playlistOutput = document.getElementById("playlistOutput");
+
+    function setStatus(msg) {
+      statusElem.textContent = msg || "";
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function secondsToHMS(sec) {
+      sec = Math.max(0, Math.floor(sec));
+      const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+      const s = String(sec % 60).padStart(2, "0");
+      return `${h}:${m}:${s}`;
+    }
+
+    function buildShowsUI() {
+      const set = new Set(library.map(e => e.show));
+      const sorted = [...set].sort((a, b) => a.localeCompare(b));
+      allShows = sorted;
+
+      showsContainer.innerHTML = "";
+      sorted.forEach(show => {
+        const id = "show_" + show.replace(/\W+/g, "_");
+        const label = document.createElement("label");
+        label.className = "show-item";
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.id = id;
+        cb.value = show;
+
+        const span = document.createElement("span");
+        span.textContent = show;
+
+        label.appendChild(cb);
+        label.appendChild(span);
+        showsContainer.appendChild(label);
+      });
+    }
+
+    function getSelectedShows() {
+      const checked = showsContainer.querySelectorAll("input[type=checkbox]:checked");
+      const values = [];
+      checked.forEach(cb => values.push(cb.value));
+      return values;
+    }
+
+    function buildMarathon() {
+      const selectedShows = getSelectedShows();
+      if (selectedShows.length === 0) {
+        setStatus("Please select at least one show.");
+        playlistOutput.value = "";
+        return;
+      }
+
+      // Filter library by selected shows
+      const pool = library.filter(ep => selectedShows.includes(ep.show));
+      if (pool.length === 0) {
+        setStatus("No episodes found for the selected shows.");
+        playlistOutput.value = "";
+        return;
+      }
+
+      shuffle(pool);
+
+      const chosen = [];
+      let total = 0;
+
+      for (const ep of pool) {
+        if (total + ep.duration_seconds > targetSeconds + 5 * 60) {
+          // stop if we’d overshoot by more than 5 minutes
+          continue;
+        }
+        chosen.push(ep);
+        total += ep.duration_seconds;
+        if (total >= targetSeconds) break;
+      }
+
+      if (chosen.length === 0) {
+        setStatus("Could not fit any episodes into the selected length.");
+        playlistOutput.value = "";
+        return;
+      }
+
+      let out = "";
+      let running = 0;
+      chosen.forEach((ep, idx) => {
+        const start = secondsToHMS(running);
+        out += `${idx + 1}. ${start} ${ep.show} - ${ep.episode_title}\n`;
+        running += ep.duration_seconds;
+      });
+      out += `\nTotal duration: ${secondsToHMS(running)}\n`;
+
+      playlistOutput.value = out.trim();
+      setStatus(`Built playlist with ${chosen.length} episodes (~${secondsToHMS(running)})`);
+    }
+
+    // Target length buttons
+    document.querySelectorAll(".target-buttons button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".target-buttons button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const hours = parseInt(btn.dataset.hours, 10) || 12;
+        targetSeconds = hours * 3600;
+      });
+    });
+
+    document.getElementById("buildBtn").addEventListener("click", () => {
+      buildMarathon();
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      showsContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
+      playlistOutput.value = "";
+      setStatus("");
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      const text = playlistOutput.value.trim();
+      if (!text) {
+        setStatus("Nothing to copy yet.");
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus("Playlist copied to clipboard.");
+      } catch (e) {
+        setStatus("Could not copy automatically. Select and copy manually.");
+      }
+    });
+
+    // Load library.json
+    fetch("library.json")
+      .then(r => r.json())
+      .then(data => {
+        library = data || [];
+        setStatus(`Library loaded. Episodes available: ${library.length}`);
+        buildShowsUI();
+      })
+      .catch(err => {
+        console.error(err);
+        setStatus("Error loading library.json. Make sure it’s in the same folder.");
+      });
+  </script>
+</body>
+</html>
