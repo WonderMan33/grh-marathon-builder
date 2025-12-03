@@ -123,6 +123,16 @@
       font-size: 0.85rem;
       color: #ccc;
     }
+    #senderName {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: #0d0d0d;
+      color: #eee;
+      font-size: 0.9rem;
+    }
     @media (max-width: 600px) {
       h1 {
         font-size: 1.4rem;
@@ -162,6 +172,10 @@
 
     <div class="card">
       <h2>3. Build & Send Playlist</h2>
+
+      <div class="small">Your name or nickname (optional):</div>
+      <input id="senderName" type="text" placeholder="Example: Mary from Seattle" />
+
       <div class="actions">
         <button id="buildBtn">Create My Marathon</button>
         <button id="clearBtn">Clear Selection</button>
@@ -181,12 +195,102 @@
     <input type="hidden" name="playlist" id="playlistField">
     <input type="hidden" name="shows_selected" id="showsField">
     <input type="hidden" name="target_hours" id="hoursField">
+    <input type="hidden" name="sender_name" id="senderNameField">
   </form>
 
   <script>
     let library = [];
     let allShows = [];
     let targetSeconds = 12 * 3600; // default 12 hours
+
+    // Whitelist of shows that should appear in the picker (exactly what you specified)
+    const allowedShows = [
+      "BBC Christmas Stories",
+      "BBC Radio",
+      "BBC Stories",
+      "Beyond Midnight",
+      "Bob Bailey As Yours Truly",
+      "Bob Bailey Singles",
+      "Boston Blackie",
+      "Box 13",
+      "Broadway Is My Beat",
+      "Candy Matson",
+      "Casey Crime Photographer",
+      "CBC Mystery Theatre",
+      "CBS Radio Mystery Theater",
+      "CBS Radio Workshop",
+      "CBSRMT",
+      "Crime Classics",
+      "Crisis",
+      "Damon Runyon",
+      "Dangerous Assignment",
+      "Dangerously Yours",
+      "Dark Fantasy",
+      "Dimension X",
+      "Dr. Christian",
+      "Dr. Kildare",
+      "Dragnet",
+      "Edmond Obrien",
+      "Father Knows Best",
+      "Fibber McGee and Molly",
+      "Fort Laramie",
+      "Frontier Gentleman",
+      "Gunsmoke",
+      "Have Gun Will Travel",
+      "Horror Stories",
+      "Inner Sanctum Mysteries",
+      "Jeff Regan",
+      "Let George Do It",
+      "Let George Sherlock Holmes Mash",
+      "Lights Out",
+      "Lux Radio Theatre",
+      "Man Called X",
+      "Mandel Kramer",
+      "Michael Shayne",
+      "Molle Mystery Theater",
+      "Mystery Is My Hobby",
+      "Nero Wolfe",
+      "Nick Carter, Master Detective",
+      "Obsession",
+      "Pat Novak, For Hire",
+      "Philip Marlowe",
+      "Philo Vance",
+      "Ray Bradbury Theater",
+      "Red Skelton Show",
+      "Rogues Gallery",
+      "Roy Rogers Show",
+      "Sam Spade",
+      "Screen Directors Playhouse",
+      "Screen Guild Theater",
+      "Sears Radio Theater",
+      "Sherlock & Wolfe",
+      "Sherlock Holmes",
+      "Spade",
+      "Stories of Sherlock Holmes",
+      "Strange Wills",
+      "Summer Spook Radio Dramas",
+      "Suspense",
+      "Tales of the Texas Rangers",
+      "The Falcon",
+      "The Great Gildersleeve",
+      "The Jack Benny Program",
+      "The Mysterious Traveler",
+      "The New Adventures of Sherlock Holmes",
+      "The Saint",
+      "The Whistler",
+      "Theater Five",
+      "This Is Your FBI",
+      "Twilight Zone Radio Dramas",
+      "Vincent Price as The Saint",
+      "Weird Circle",
+      "X Minus One",
+      "Yours Truly, Johnny Dollar",
+      "Yours Truly, Johnny Dollar (Bob Bailey)",
+      "Yours Truly, Johnny Dollar (Edmond O'Brien)",
+      "Yours Truly, Johnny Dollar (John Lund)",
+      "Yours Truly, Johnny Dollar (Mandel Kramer)",
+      "Yours Truly, Johnny Dollar (Robert Readick)"
+    ];
 
     const showsContainer = document.getElementById("showsContainer");
     const statusElem = document.getElementById("status");
@@ -212,8 +316,12 @@
     }
 
     function buildShowsUI() {
-      // Dedupe show names so you don't see repeats in the chooser.
-      const set = new Set(library.map(e => e.show));
+      // Only include shows that are in the whitelist
+      const set = new Set(
+        library
+          .map(e => e.show)
+          .filter(show => allowedShows.includes(show))
+      );
       const sorted = [...set].sort((a, b) => a.localeCompare(b));
       allShows = sorted;
 
@@ -337,10 +445,12 @@
       const selectedShows = getSelectedShows();
       const activeBtn = document.querySelector(".target-buttons button.active");
       const hours = activeBtn ? activeBtn.dataset.hours : "12";
+      const senderName = document.getElementById("senderName").value.trim();
 
       document.getElementById("playlistField").value = text;
       document.getElementById("showsField").value = selectedShows.join(", ");
       document.getElementById("hoursField").value = hours;
+      document.getElementById("senderNameField").value = senderName;
 
       setStatus("Sending playlist to Wade...");
       document.getElementById("sendForm").submit();
