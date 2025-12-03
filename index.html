@@ -93,7 +93,7 @@
       font-weight: 600;
     }
     #playlistOutput {
-      display: none; /* keep internal but invisible */
+      display: none; /* internal only */
       width: 100%;
       min-height: 180px;
       background: #0d0d0d;
@@ -141,15 +141,15 @@
   <div class="container">
     <h1>Golden Radio Hour – Marathon Builder</h1>
     <div class="top-note">
-      Choose your favorite shows, pick a marathon length, and send Wade a custom marathon request. He’ll build the final lineup from his full library.
+      Choose your favorite programs, pick a marathon length, and send Wade a custom marathon request. He’ll build the final lineup from his library.
     </div>
 
     <!-- 1. Show picker -->
     <div class="card">
-      <h2>1. Choose Shows</h2>
+      <h2>1. Choose Programs</h2>
       <div id="showsContainer" class="shows-grid"></div>
       <div class="small" style="margin-top:6px;">
-        Select one or more shows you want included in your custom marathon.
+        Select one or more programs you want included in your custom marathon.
       </div>
     </div>
 
@@ -184,11 +184,11 @@
       </div>
       <div id="status"></div>
 
-      <!-- Hidden playlist text (internal only) -->
+      <!-- Hidden playlist text (internal only, emailed to you) -->
       <textarea id="playlistOutput"></textarea>
 
       <div class="small">
-        “Send to Wade” emails your request directly to him, including your show choices, target length, your title idea, and the internal playlist.
+        “Send to Wade” emails your request directly to him, including your program choices, target length, title idea, and the internal playlist.
       </div>
     </div>
   </div>
@@ -217,6 +217,126 @@
     const senderNameField = document.getElementById("senderNameField");
     const userTitleField = document.getElementById("userTitleField");
 
+    // Clean program names you asked for
+    const allowedShows = [
+      "BBC Collection",
+      "Beyond Midnight",
+      "Boston Blackie",
+      "Box 13",
+      "Broadway Is My Beat",
+      "Candy Matson",
+      "Casey, Crime Photographer",
+      "CBC Mystery Theatre",
+      "CBS Radio Mystery Theater",
+      "CBS Radio Workshop",
+      "Crime Classics",
+      "Crisis",
+      "Damon Runyon Theater",
+      "Dangerous Assignment",
+      "Dangerously Yours",
+      "Dark Fantasy",
+      "Dimension X",
+      "Dr. Christian",
+      "Dr. Kildare",
+      "Dragnet",
+      "Father Knows Best",
+      "Fibber McGee and Molly",
+      "Fort Laramie",
+      "Frontier Gentleman",
+      "Gunsmoke",
+      "Have Gun, Will Travel",
+      "Horror Stories",
+      "Inner Sanctum Mysteries",
+      "Jeff Regan",
+      "Let George Do It",
+      "Let George Sherlock Holmes Mash",
+      "Lights Out",
+      "Lux Radio Theatre",
+      "Man Called X",
+      "Michael Shayne",
+      "Molle Mystery Theater",
+      "Mystery Is My Hobby",
+      "Nero Wolfe",
+      "Nick Carter, Master Detective",
+      "Obsession",
+      "Pat Novak, For Hire",
+      "Philip Marlowe",
+      "Philo Vance",
+      "Ray Bradbury Theater",
+      "Red Skelton Show",
+      "Rogues Gallery",
+      "Roy Rogers Show",
+      "Sam Spade",
+      "Screen Directors Playhouse",
+      "Screen Guild Theater",
+      "Sears Radio Theater",
+      "Sherlock Holmes",
+      "Stories of Sherlock Holmes",
+      "Strange Wills",
+      "Summer Spook Radio Dramas",
+      "Suspense",
+      "Tales of the Texas Rangers",
+      "The Falcon",
+      "The Great Gildersleeve",
+      "The Jack Benny Program",
+      "The Mysterious Traveler",
+      "The New Adventures of Sherlock Holmes",
+      "The Saint",
+      "The Whistler",
+      "Theater Five",
+      "This Is Your FBI",
+      "Twilight Zone Radio Dramas",
+      "Vincent Price as The Saint",
+      "Weird Circle",
+      "X Minus One",
+      "Yours Truly, Johnny Dollar",
+      "Yours Truly, Johnny Dollar (Bob Bailey)",
+      "Yours Truly, Johnny Dollar (Edmond O'Brien)",
+      "Yours Truly, Johnny Dollar (John Lund)",
+      "Yours Truly, Johnny Dollar (Mandel Kramer)",
+      "Yours Truly, Johnny Dollar (Robert Readick)"
+    ];
+
+    // Map clean names -> actual show labels in your JSON
+    const aliasGroups = {
+      "BBC Collection": [
+        "BBC Christmas Stories",
+        "BBC Radio",
+        "BBC Stories"
+      ],
+      "CBS Radio Mystery Theater": [
+        "CBS Radio Mystery Theater",
+        "CBSRMT"
+      ],
+      "Sam Spade": [
+        "Sam Spade",
+        "Spade"
+      ],
+      "Let George Do It": [
+        "Let George Do It"
+      ],
+      "Let George Sherlock Holmes Mash": [
+        "Let George Sherlock Holmes Mash"
+      ],
+      "Yours Truly, Johnny Dollar": [
+        "Yours Truly, Johnny Dollar"
+      ],
+      "Yours Truly, Johnny Dollar (Bob Bailey)": [
+        "Yours Truly, Johnny Dollar (Bob Bailey)",
+        "Bob Bailey As Yours Truly",
+        "Bob Bailey Singles"
+      ],
+      "Yours Truly, Johnny Dollar (Edmond O'Brien)": [
+        "Yours Truly, Johnny Dollar (Edmond O'Brien)",
+        "Edmond Obrien"
+      ],
+      "Yours Truly, Johnny Dollar (Mandel Kramer)": [
+        "Yours Truly, Johnny Dollar (Mandel Kramer)",
+        "Mandel Kramer"
+      ]
+      // All other clean names are assumed to match JSON show names directly
+    };
+
     function setStatus(msg) {
       statusElem.textContent = msg || "";
     }
@@ -237,15 +357,8 @@
     }
 
     function buildShowsUI() {
-      // All unique show names from library.json, no duplicates, no blanks
-      const set = new Set(
-        library
-          .map(e => e.show)
-          .filter(show => show && show.trim() !== "")
-      );
-      const sorted = [...set].sort((a, b) => a.localeCompare(b));
-
       showsContainer.innerHTML = "";
+      const sorted = [...allowedShows].sort((a, b) => a.localeCompare(b));
       sorted.forEach(show => {
         const label = document.createElement("label");
         label.className = "show-item";
@@ -269,17 +382,29 @@
       ).map(cb => cb.value);
     }
 
+    function getUnderlyingShowNames(selectedCleanNames) {
+      const result = new Set();
+      selectedCleanNames.forEach(name => {
+        const aliases = aliasGroups[name] || [name];
+        aliases.forEach(a => result.add(a));
+      });
+      return Array.from(result);
+    }
+
     function buildMarathon() {
-      const selectedShows = getSelectedShows();
-      if (selectedShows.length === 0) {
-        setStatus("Please select at least one show.");
+      const selectedClean = getSelectedShows();
+      if (selectedClean.length === 0) {
+        setStatus("Please select at least one program.");
         playlistOutput.value = "";
         return;
       }
 
-      const pool = library.filter(ep => selectedShows.includes(ep.show));
+      const underlyingNames = getUnderlyingShowNames(selectedClean);
+
+      // Filter library episodes by mapped names
+      const pool = library.filter(ep => underlyingNames.includes(ep.show));
       if (pool.length === 0) {
-        setStatus("No episodes found for the selected shows.");
+        setStatus("No episodes found for the selected programs.");
         playlistOutput.value = "";
         return;
       }
@@ -290,7 +415,9 @@
       let total = 0;
 
       for (const ep of pool) {
-        if (total + ep.duration_seconds > targetSeconds + 5 * 60) continue;
+        if (total + ep.duration_seconds > targetSeconds + 5 * 60) {
+          continue;
+        }
         chosen.push(ep);
         total += ep.duration_seconds;
         if (total >= targetSeconds) break;
@@ -340,14 +467,14 @@
         return;
       }
 
-      const selectedShows = getSelectedShows();
+      const selectedClean = getSelectedShows();
       const activeBtn = document.querySelector(".target-buttons button.active");
       const hours = activeBtn ? activeBtn.dataset.hours : "12";
       const senderName = document.getElementById("senderName").value.trim();
       const userTitle = document.getElementById("userTitle").value.trim();
 
       playlistField.value = text;
-      showsField.value = selectedShows.join(", ");
+      showsField.value = selectedClean.join(", ");
       hoursField.value = hours;
       senderNameField.value = senderName;
       userTitleField.value = userTitle;
@@ -356,7 +483,7 @@
       sendForm.submit();
     });
 
-    // Load library.json (built from your cleaned CSV)
+    // Load library.json (the one you just pushed to GitHub)
     fetch("library.json")
       .then(r => r.json())
       .then(data => {
