@@ -93,7 +93,7 @@
       font-weight: 600;
     }
     #playlistOutput {
-      display: none; /* Hidden output */
+      display: none; /* keep internal but invisible */
       width: 100%;
       min-height: 180px;
       background: #0d0d0d;
@@ -119,7 +119,8 @@
       font-size: 0.85rem;
       color: #ccc;
     }
-    #senderName {
+    #senderName,
+    #userTitle {
       width: 100%;
       padding: 8px;
       margin-top: 4px;
@@ -140,10 +141,10 @@
   <div class="container">
     <h1>Golden Radio Hour – Marathon Builder</h1>
     <div class="top-note">
-      Choose your favorite shows, pick a marathon length, and send a custom marathon request. Wade will build the final playlist based on your selections.
+      Choose your favorite shows, pick a marathon length, and send Wade a custom marathon request. He’ll build the final lineup from his full library.
     </div>
 
-    <!-- Show picker -->
+    <!-- 1. Show picker -->
     <div class="card">
       <h2>1. Choose Shows</h2>
       <div id="showsContainer" class="shows-grid"></div>
@@ -152,7 +153,7 @@
       </div>
     </div>
 
-    <!-- Length picker -->
+    <!-- 2. Length picker -->
     <div class="card">
       <h2>2. Choose Target Length</h2>
       <div class="target-buttons">
@@ -166,12 +167,15 @@
       </div>
     </div>
 
-    <!-- Request sender -->
+    <!-- 3. Sender + title + send -->
     <div class="card">
       <h2>3. Send Your Request</h2>
 
       <div class="small">Your name or nickname (optional):</div>
       <input id="senderName" type="text" placeholder="Example: Mary from Seattle" />
+
+      <div class="small" style="margin-top:8px;">Your marathon title idea (optional):</div>
+      <input id="userTitle" type="text" placeholder="Example: Frontier Trails & Fort Laramie Nights" />
 
       <div class="actions">
         <button id="buildBtn">Create My Marathon</button>
@@ -180,69 +184,47 @@
       </div>
       <div id="status"></div>
 
-      <!-- Hidden playlist output -->
+      <!-- Hidden playlist text (internal only) -->
       <textarea id="playlistOutput"></textarea>
 
       <div class="small">
-        “Send to Wade” emails your request directly to him with all internal details. He will assemble the final marathon.
+        “Send to Wade” emails your request directly to him, including your show choices, target length, your title idea, and the internal playlist.
       </div>
     </div>
   </div>
 
-  <!-- Formspree -->
+  <!-- Hidden form for Formspree -->
   <form id="sendForm" action="https://formspree.io/f/mqarbnyg" method="POST" style="display:none;">
     <input type="hidden" name="playlist" id="playlistField">
     <input type="hidden" name="shows_selected" id="showsField">
     <input type="hidden" name="target_hours" id="hoursField">
     <input type="hidden" name="sender_name" id="senderNameField">
+    <input type="hidden" name="user_title" id="userTitleField">
   </form>
 
   <script>
     let library = [];
-    let allShows = [];
     let targetSeconds = 12 * 3600;
-
-    /* YOUR APPROVED FULL SHOW LIST */
-    const allowedShows = [
-      "BBC Christmas Stories","BBC Radio","BBC Stories","Beyond Midnight",
-      "Bob Bailey As Yours Truly","Bob Bailey Singles","Boston Blackie","Box 13",
-      "Broadway Is My Beat","Candy Matson","Casey Crime Photographer","CBC Mystery Theatre",
-      "CBS Radio Mystery Theater","CBS Radio Workshop","CBSRMT","Crime Classics",
-      "Crisis","Damon Runyon","Dangerous Assignment","Dangerously Yours","Dark Fantasy",
-      "Dimension X","Dr. Christian","Dr. Kildare","Dragnet","Edmond Obrien",
-      "Father Knows Best","Fibber McGee and Molly","Fort Laramie","Frontier Gentleman",
-      "Gunsmoke","Have Gun Will Travel","Horror Stories","Inner Sanctum Mysteries",
-      "Jeff Regan","Let George Do It","Let George Sherlock Holmes Mash","Lights Out",
-      "Lux Radio Theatre","Man Called X","Mandel Kramer","Michael Shayne",
-      "Molle Mystery Theater","Mystery Is My Hobby","Nero Wolfe",
-      "Nick Carter, Master Detective","Obsession","Pat Novak, For Hire",
-      "Philip Marlowe","Philo Vance","Ray Bradbury Theater","Red Skelton Show",
-      "Rogues Gallery","Roy Rogers Show","Sam Spade","Screen Directors Playhouse",
-      "Screen Guild Theater","Sears Radio Theater","Sherlock & Wolfe","Sherlock Holmes",
-      "Spade","Stories of Sherlock Holmes","Strange Wills","Summer Spook Radio Dramas",
-      "Suspense","Tales of the Texas Rangers","The Falcon","The Great Gildersleeve",
-      "The Jack Benny Program","The Mysterious Traveler","The New Adventures of Sherlock Holmes",
-      "The Saint","The Whistler","Theater Five","This Is Your FBI",
-      "Twilight Zone Radio Dramas","Vincent Price as The Saint",
-      "Weird Circle","X Minus One",
-      "Yours Truly, Johnny Dollar","Yours Truly, Johnny Dollar (Bob Bailey)",
-      "Yours Truly, Johnny Dollar (Edmond O'Brien)","Yours Truly, Johnny Dollar (John Lund)",
-      "Yours Truly, Johnny Dollar (Mandel Kramer)",
-      "Yours Truly, Johnny Dollar (Robert Readick)"
-    ];
 
     const showsContainer = document.getElementById("showsContainer");
     const playlistOutput = document.getElementById("playlistOutput");
     const statusElem = document.getElementById("status");
 
+    const sendForm = document.getElementById("sendForm");
+    const playlistField = document.getElementById("playlistField");
+    const showsField = document.getElementById("showsField");
+    const hoursField = document.getElementById("hoursField");
+    const senderNameField = document.getElementById("senderNameField");
+    const userTitleField = document.getElementById("userTitleField");
+
     function setStatus(msg) {
       statusElem.textContent = msg || "";
     }
 
-    function shuffle(arr) {
-      for (let i = arr.length - 1; i > 0; i--) {
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+        [array[i], array[j]] = [array[j], array[i]];
       }
     }
 
@@ -255,15 +237,16 @@
     }
 
     function buildShowsUI() {
+      // All unique show names from library.json, no duplicates, no blanks
       const set = new Set(
-        library.map(e => e.show).filter(show => allowedShows.includes(show))
+        library
+          .map(e => e.show)
+          .filter(show => show && show.trim() !== "")
       );
       const sorted = [...set].sort((a, b) => a.localeCompare(b));
+
       showsContainer.innerHTML = "";
-
       sorted.forEach(show => {
-        const id = "show_" + show.replace(/\W+/g, "_");
-
         const label = document.createElement("label");
         label.className = "show-item";
 
@@ -274,91 +257,117 @@
         const span = document.createElement("span");
         span.textContent = show;
 
-        label.append(cb, span);
-        showsContainer.append(label);
+        label.appendChild(cb);
+        label.appendChild(span);
+        showsContainer.appendChild(label);
       });
     }
 
     function getSelectedShows() {
-      return [...showsContainer.querySelectorAll("input:checked")].map(x => x.value);
+      return Array.from(
+        showsContainer.querySelectorAll("input[type=checkbox]:checked")
+      ).map(cb => cb.value);
     }
 
     function buildMarathon() {
       const selectedShows = getSelectedShows();
-      if (!selectedShows.length) {
+      if (selectedShows.length === 0) {
         setStatus("Please select at least one show.");
+        playlistOutput.value = "";
         return;
       }
 
-      const pool = library.filter(e => selectedShows.includes(e.show));
-      if (!pool.length) {
-        setStatus("No episodes found for selected shows.");
+      const pool = library.filter(ep => selectedShows.includes(ep.show));
+      if (pool.length === 0) {
+        setStatus("No episodes found for the selected shows.");
+        playlistOutput.value = "";
         return;
       }
 
       shuffle(pool);
 
+      const chosen = [];
       let total = 0;
-      let chosen = [];
 
       for (const ep of pool) {
-        if (total + ep.duration_seconds > targetSeconds + 300) continue;
+        if (total + ep.duration_seconds > targetSeconds + 5 * 60) continue;
         chosen.push(ep);
         total += ep.duration_seconds;
         if (total >= targetSeconds) break;
       }
 
-      if (!chosen.length) {
-        setStatus("Could not fit any episodes.");
+      if (chosen.length === 0) {
+        setStatus("Could not fit any episodes into the selected length.");
+        playlistOutput.value = "";
         return;
       }
 
-      let txt = "";
-      let run = 0;
-
-      chosen.forEach((ep, i) => {
-        txt += `${i+1}. ${secondsToHMS(run)} ${ep.show} - ${ep.episode_title}\n`;
-        run += ep.duration_seconds;
+      let out = "";
+      let running = 0;
+      chosen.forEach((ep, idx) => {
+        const start = secondsToHMS(running);
+        out += `${idx + 1}. ${start} ${ep.show} - ${ep.episode_title}\n`;
+        running += ep.duration_seconds;
       });
+      out += `\nTotal duration: ${secondsToHMS(running)}\n`;
 
-      txt += `\nTotal duration: ${secondsToHMS(run)}`;
-
-      playlistOutput.value = txt;
-      setStatus("Playlist created. Click Send to Wade.");
+      playlistOutput.value = out.trim();
+      setStatus(`Marathon request created (~${secondsToHMS(running)}). Click "Send to Wade" to submit it.`);
     }
 
-    document.getElementById("buildBtn").onclick = buildMarathon;
-    document.getElementById("clearBtn").onclick = () => {
-      showsContainer.querySelectorAll("input").forEach(i => i.checked = false);
+    // Target length buttons
+    document.querySelectorAll(".target-buttons button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".target-buttons button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const hours = parseInt(btn.dataset.hours, 10) || 12;
+        targetSeconds = hours * 3600;
+      });
+    });
+
+    document.getElementById("buildBtn").addEventListener("click", buildMarathon);
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      showsContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
       playlistOutput.value = "";
       setStatus("");
-    };
+    });
 
-    document.getElementById("sendBtn").onclick = () => {
-      const txt = playlistOutput.value.trim();
-      if (!txt) return setStatus("Nothing to send yet.");
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      const text = playlistOutput.value.trim();
+      if (!text) {
+        setStatus("Nothing to send yet. Click 'Create My Marathon' first.");
+        return;
+      }
 
-      const selected = getSelectedShows().join(", ");
-      const hours = document.querySelector(".target-buttons .active")?.dataset.hours || "12";
-      const name = document.getElementById("senderName").value.trim();
+      const selectedShows = getSelectedShows();
+      const activeBtn = document.querySelector(".target-buttons button.active");
+      const hours = activeBtn ? activeBtn.dataset.hours : "12";
+      const senderName = document.getElementById("senderName").value.trim();
+      const userTitle = document.getElementById("userTitle").value.trim();
 
-      playlistField.value = txt;
-      showsField.value = selected;
+      playlistField.value = text;
+      showsField.value = selectedShows.join(", ");
       hoursField.value = hours;
-      senderNameField.value = name;
+      senderNameField.value = senderName;
+      userTitleField.value = userTitle;
 
-      setStatus("Sending request...");
+      setStatus("Sending playlist to Wade...");
       sendForm.submit();
-    };
+    });
 
+    // Load library.json (built from your cleaned CSV)
     fetch("library.json")
       .then(r => r.json())
       .then(data => {
-        library = data;
-        setStatus(`Library loaded (${library.length} episodes).`);
+        library = data || [];
+        setStatus(`Library loaded. Episodes available: ${library.length}`);
         buildShowsUI();
       })
-      .catch(() => setStatus("Error loading library.json."));
+      .catch(err => {
+        console.error(err);
+        setStatus("Error loading library.json. Make sure it’s in the same folder as this page.");
+      });
   </script>
 </body>
 </html>
