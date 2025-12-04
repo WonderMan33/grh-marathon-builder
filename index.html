@@ -1,48 +1,598 @@
-document.getElementById("sendBtn").addEventListener("click", async () => {
-  const text = playlistOutput.value.trim();
-  if (!text) {
-    setStatus("Nothing to send yet. Click 'Create My Marathon' first.");
-    return;
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Golden Radio Hour – Marathon Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #111;
+      color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.25rem;
+    }
+    h2 {
+      font-size: 1.2rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .card {
+      background: #1b1b1b;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+      border: 1px solid #333;
+    }
+    .shows-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 6px 14px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+    label.show-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    label.show-item input {
+      transform: scale(1.2);
+    }
+    .target-buttons button {
+      margin: 4px 6px 4px 0;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #555;
+      background: #222;
+      color: #eee;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .target-buttons button.active {
+      border-color: #ffd54f;
+      background: #333;
+    }
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .actions button {
+      padding: 10px 18px;
+      border-radius: 6px;
+      border: none;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    #buildBtn {
+      background: #ffd54f;
+      color: #111;
+      font-weight: 600;
+    }
+    #clearBtn {
+      background: #333;
+      color: #eee;
+    }
+    #sendBtn {
+      background: #4caf50;
+      color: #111;
+      font-weight: 600;
+    }
+    #playlistOutput {
+      display: none; /* internal only */
+      width: 100%;
+      min-height: 180px;
+      background: #0d0d0d;
+      color: #eee;
+      border-radius: 6px;
+      border: 1px solid #333;
+      padding: 10px;
+      font-family: Consolas, Menlo, monospace;
+      font-size: 0.9rem;
+      resize: vertical;
+    }
+    .small {
+      font-size: 0.8rem;
+      color: #aaa;
+    }
+    .top-note {
+      font-size: 0.85rem;
+      color: #bbb;
+      margin-bottom: 0.5rem;
+    }
+    #status {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: #ccc;
+    }
+    #senderName,
+    #userTitle {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: #0d0d0d;
+      color: #eee;
+      font-size: 0.9rem;
+    }
+    .background-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 6px 12px;
+      margin-top: 6px;
+    }
+    .background-options label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .background-options input {
+      transform: scale(1.1);
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Golden Radio Hour – Marathon Builder</h1>
+    <div class="top-note">
+      Choose your favorite programs, pick a marathon length, and send Wade a custom marathon request. Your playlist will be built from the library and streamed on the channel.
+    </div>
 
-  const selectedClean = getSelectedShows();
-  const activeBtn = document.querySelector(".target-buttons button.active");
-  const hours = activeBtn ? activeBtn.dataset.hours : "12";
-  const senderName = document.getElementById("senderName").value.trim();
-  const userTitle = document.getElementById("userTitle").value.trim();
-  const backgroundChoice = getSelectedBackground();
+    <!-- 1. Program picker -->
+    <div class="card">
+      <h2>1. Choose Programs</h2>
+      <div id="showsContainer" class="shows-grid"></div>
+      <div class="small" style="margin-top:6px;">
+        Select one or more programs you want included in your custom marathon.
+      </div>
+    </div>
 
-  const payload = {
-    playlist: text,
-    shows_selected: selectedClean.join(", "),
-    target_hours: hours,
-    sender_name: senderName,
-    user_title: userTitle,
-    background_choice: backgroundChoice
-  };
+    <!-- 2. Length picker -->
+    <div class="card">
+      <h2>2. Choose Target Length</h2>
+      <div class="target-buttons">
+        <button type="button" data-hours="3">3 hours</button>
+        <button type="button" data-hours="6">6 hours</button>
+        <button type="button" data-hours="9">9 hours</button>
+        <button type="button" data-hours="12" class="active">12 hours</button>
+      </div>
+      <div class="small">
+        The builder will try to get as close to this length as possible.
+      </div>
+    </div>
 
-  setStatus("Sending playlist to Wade...");
+    <!-- 3. Background style -->
+    <div class="card">
+      <h2>3. Choose Background Style</h2>
+      <div class="small">
+        This helps Wade decide what visual to use behind your marathon.
+      </div>
+      <div class="background-options" id="backgroundOptions">
+        <label>
+          <input type="radio" name="background" value="Dark screen only" checked />
+          <span>Dark screen only</span>
+        </label>
+        <label>
+          <input type="radio" name="background" value="Fireplace / cozy room" />
+          <span>Fireplace / cozy room</span>
+        </label>
+        <label>
+          <input type="radio" name="background" value="Rainy night window" />
+          <span>Rainy night window</span>
+        </label>
+        <label>
+          <input type="radio" name="background" value="Vintage theater ambience" />
+          <span>Vintage theater ambience</span>
+        </label>
+        <label>
+          <input type="radio" name="background" value="Starfield / space loop" />
+          <span>Starfield / space loop</span>
+        </label>
+      </div>
+      <div class="small" style="margin-top:6px;">
+        Final visuals may vary based on which background videos Wade has available.
+      </div>
+    </div>
 
-  try {
-    const res = await fetch("https://formspree.io/f/mqarbnyg", {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
+    <!-- 4. Sender + title + send -->
+    <div class="card">
+      <h2>4. Send Your Request</h2>
+
+      <div class="small">Your name or nickname (optional):</div>
+      <input id="senderName" type="text" placeholder="Example: Mary from Seattle" />
+
+      <div class="small" style="margin-top:8px;">Your marathon title idea (optional):</div>
+      <input id="userTitle" type="text" placeholder="Example: Frontier Trails & Fort Laramie Nights" />
+
+      <div class="actions">
+        <button id="buildBtn">Create My Marathon</button>
+        <button id="clearBtn">Clear Selection</button>
+        <button id="sendBtn">Send to Wade</button>
+      </div>
+      <div id="status"></div>
+
+      <!-- Hidden playlist text (internal only, emailed to you) -->
+      <textarea id="playlistOutput"></textarea>
+
+      <div class="small">
+        “Send to Wade” emails your request directly to him, including your programs, length, background choice, title idea, and the internal playlist. Episodes won’t show on this page yet while the builder is in testing.
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden form (kept but not used directly anymore) -->
+  <form id="sendForm" action="https://formspree.io/f/mqarbnyg" method="POST" style="display:none;">
+    <input type="hidden" name="playlist" id="playlistField">
+    <input type="hidden" name="shows_selected" id="showsField">
+    <input type="hidden" name="target_hours" id="hoursField">
+    <input type="hidden" name="sender_name" id="senderNameField">
+    <input type="hidden" name="user_title" id="userTitleField">
+    <input type="hidden" name="background_choice" id="backgroundField">
+  </form>
+
+  <script>
+    let library = [];
+    let targetSeconds = 12 * 3600;
+
+    const showsContainer = document.getElementById("showsContainer");
+    const playlistOutput = document.getElementById("playlistOutput");
+    const statusElem = document.getElementById("status");
+
+    // We keep these refs in case you ever want to use the form directly again
+    const sendForm = document.getElementById("sendForm");
+    const playlistField = document.getElementById("playlistField");
+    const showsField = document.getElementById("showsField");
+    const hoursField = document.getElementById("hoursField");
+    const senderNameField = document.getElementById("senderNameField");
+    const userTitleField = document.getElementById("userTitleField");
+    const backgroundField = document.getElementById("backgroundField");
+
+    // Clean program names you want users to see
+    const allowedShows = [
+      "BBC Collection",
+      "Beyond Midnight",
+      "Boston Blackie",
+      "Box 13",
+      "Broadway Is My Beat",
+      "Candy Matson",
+      "Casey, Crime Photographer",
+      "CBC Mystery Theatre",
+      "CBS Radio Mystery Theater",
+      "CBS Radio Workshop",
+      "Crime Classics",
+      "Crisis",
+      "Damon Runyon Theater",
+      "Dangerous Assignment",
+      "Dangerously Yours",
+      "Dark Fantasy",
+      "Dimension X",
+      "Dr. Christian",
+      "Dr. Kildare",
+      "Dragnet",
+      "Father Knows Best",
+      "Fibber McGee and Molly",
+      "Fort Laramie",
+      "Frontier Gentleman",
+      "Gunsmoke",
+      "Have Gun, Will Travel",
+      "Horror Stories",
+      "Inner Sanctum Mysteries",
+      "Jeff Regan",
+      "Let George Do It",
+      "Let George Sherlock Holmes Mash",
+      "Lights Out",
+      "Lux Radio Theatre",
+      "Man Called X",
+      "Michael Shayne",
+      "Molle Mystery Theater",
+      "Mystery Is My Hobby",
+      "Nero Wolfe",
+      "Nick Carter, Master Detective",
+      "Obsession",
+      "Pat Novak, For Hire",
+      "Philip Marlowe",
+      "Philo Vance",
+      "Ray Bradbury Theater",
+      "Red Skelton Show",
+      "Rogues Gallery",
+      "Roy Rogers Show",
+      "Sam Spade",
+      "Screen Directors Playhouse",
+      "Screen Guild Theater",
+      "Sears Radio Theater",
+      "Sherlock Holmes",
+      "Stories of Sherlock Holmes",
+      "Strange Wills",
+      "Summer Spook Radio Dramas",
+      "Suspense",
+      "Tales of the Texas Rangers",
+      "The Falcon",
+      "The Great Gildersleeve",
+      "The Jack Benny Program",
+      "The Mysterious Traveler",
+      "The New Adventures of Sherlock Holmes",
+      "The Saint",
+      "The Whistler",
+      "Theater Five",
+      "This Is Your FBI",
+      "Twilight Zone Radio Dramas",
+      "Vincent Price as The Saint",
+      "Weird Circle",
+      "X Minus One",
+      "Yours Truly, Johnny Dollar",
+      "Yours Truly, Johnny Dollar (Bob Bailey)",
+      "Yours Truly, Johnny Dollar (Edmond O'Brien)",
+      "Yours Truly, Johnny Dollar (John Lund)",
+      "Yours Truly, Johnny Dollar (Mandel Kramer)",
+      "Yours Truly, Johnny Dollar (Robert Readick)"
+    ];
+
+    function setStatus(msg) {
+      statusElem.textContent = msg || "";
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function secondsToHMS(sec) {
+      sec = Math.max(0, Math.floor(sec));
+      const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+      const s = String(sec % 60).padStart(2, "0");
+      return `${h}:${m}:${s}`;
+    }
+
+    function normalize(str) {
+      return (str || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    // Check if a single episode matches any of the selected clean program names
+    function epMatchesSelection(ep, selectedCleanNames) {
+      const showNorm = normalize(ep.show);
+      const titleNorm = normalize(ep.episode_title);
+      const pathNorm = normalize(ep.file_path || ep.path || "");
+
+      for (const cleanName of selectedCleanNames) {
+        const cleanNorm = normalize(cleanName);
+
+        if (!showNorm && !titleNorm && !pathNorm) continue;
+
+        // General contains check
+        if (
+          (showNorm && showNorm.includes(cleanNorm)) ||
+          (titleNorm && titleNorm.includes(cleanNorm)) ||
+          (pathNorm && pathNorm.includes(cleanNorm))
+        ) {
+          return true;
+        }
+
+        // Special handling for Johnny Dollar variants
+        if (cleanNorm.startsWith("yours truly johnny dollar")) {
+          const base = "yours truly johnny dollar";
+          const actorPart = cleanNorm.replace(base, "").trim(); // e.g. "bob bailey"
+
+          const hasBase =
+            (showNorm && showNorm.includes(base)) ||
+            (titleNorm && titleNorm.includes(base)) ||
+            (pathNorm && pathNorm.includes(base));
+
+          if (!hasBase) continue;
+
+          if (!actorPart) {
+            // Any Johnny Dollar
+            return true;
+          } else {
+            const actorTokens = actorPart.split(" ").filter(Boolean);
+            const lastName = actorTokens[actorTokens.length - 1]; // bailey, lund, etc.
+            if (
+              (showNorm && showNorm.includes(lastName)) ||
+              (titleNorm && titleNorm.includes(lastName)) ||
+              (pathNorm && pathNorm.includes(lastName))
+            ) {
+              return true;
+            }
+          }
+        }
+
+        // BBC Collection: catch anything with "bbc"
+        if (cleanNorm === "bbc collection") {
+          if (
+            showNorm.includes("bbc") ||
+            titleNorm.includes("bbc") ||
+            pathNorm.includes("bbc")
+          ) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    function buildShowsUI() {
+      showsContainer.innerHTML = "";
+      const sorted = [...allowedShows].sort((a, b) => a.localeCompare(b));
+      sorted.forEach(show => {
+        const label = document.createElement("label");
+        label.className = "show-item";
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.value = show;
+
+        const span = document.createElement("span");
+        span.textContent = show;
+
+        label.appendChild(cb);
+        label.appendChild(span);
+        showsContainer.appendChild(label);
+      });
+    }
+
+    function getSelectedShows() {
+      return Array.from(
+        showsContainer.querySelectorAll("input[type=checkbox]:checked")
+      ).map(cb => cb.value);
+    }
+
+    function getSelectedBackground() {
+      const checked = document.querySelector("input[name='background']:checked");
+      return checked ? checked.value : "Dark screen only";
+    }
+
+    function buildMarathon() {
+      const selectedClean = getSelectedShows();
+      if (selectedClean.length === 0) {
+        setStatus("Please select at least one program.");
+        playlistOutput.value = "";
+        return;
+      }
+
+      const pool = library.filter(ep => epMatchesSelection(ep, selectedClean));
+      if (pool.length === 0) {
+        setStatus("No episodes found for the selected programs.");
+        playlistOutput.value = "";
+        return;
+      }
+
+      shuffle(pool);
+
+      const chosen = [];
+      let total = 0;
+
+      for (const ep of pool) {
+        if (total + ep.duration_seconds > targetSeconds + 5 * 60) continue;
+        chosen.push(ep);
+        total += ep.duration_seconds;
+        if (total >= targetSeconds) break;
+      }
+
+      if (chosen.length === 0) {
+        setStatus("Could not fit any episodes into the selected length.");
+        playlistOutput.value = "";
+        return;
+      }
+
+      let out = "";
+      let running = 0;
+      chosen.forEach((ep, idx) => {
+        const start = secondsToHMS(running);
+        out += `${idx + 1}. ${start} ${ep.show} - ${ep.episode_title}\n`;
+        running += ep.duration_seconds;
+      });
+      out += `\nTotal duration: ${secondsToHMS(running)}\n`;
+
+      playlistOutput.value = out.trim();
+      setStatus(`Marathon request created (~${secondsToHMS(running)}). Click "Send to Wade" to submit it.`);
+    }
+
+    // Target length buttons
+    document.querySelectorAll(".target-buttons button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".target-buttons button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const hours = parseInt(btn.dataset.hours, 10) || 12;
+        targetSeconds = hours * 3600;
+      });
     });
 
-    if (res.ok) {
-      setStatus("Sent! Your marathon request has been delivered.");
-      // Optional: clear selections after send
-      // showsContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
-      // playlistOutput.value = "";
-    } else {
-      setStatus("There was a problem sending your request. Please try again later.");
-    }
-  } catch (err) {
-    console.error(err);
-    setStatus("Network error while sending your request.");
-  }
-});
+    document.getElementById("buildBtn").addEventListener("click", buildMarathon);
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      showsContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
+      playlistOutput.value = "";
+      setStatus("");
+    });
+
+    // NEW: send using fetch() to Formspree
+    document.getElementById("sendBtn").addEventListener("click", async () => {
+      const text = playlistOutput.value.trim();
+      if (!text) {
+        setStatus("Nothing to send yet. Click 'Create My Marathon' first.");
+        return;
+      }
+
+      const selectedClean = getSelectedShows();
+      const activeBtn = document.querySelector(".target-buttons button.active");
+      const hours = activeBtn ? activeBtn.dataset.hours : "12";
+      const senderName = document.getElementById("senderName").value.trim();
+      const userTitle = document.getElementById("userTitle").value.trim();
+      const backgroundChoice = getSelectedBackground();
+
+      const payload = {
+        playlist: text,
+        shows_selected: selectedClean.join(", "),
+        target_hours: hours,
+        sender_name: senderName,
+        user_title: userTitle,
+        background_choice: backgroundChoice
+      };
+
+      setStatus("Sending playlist to Wade...");
+
+      try {
+        const res = await fetch("https://formspree.io/f/mqarbnyg", {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          setStatus("Sent! Your marathon request has been delivered.");
+        } else {
+          setStatus("There was a problem sending your request. Please try again later.");
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus("Network error while sending your request.");
+      }
+    });
+
+    // Load library.json from the same folder
+    fetch("library.json")
+      .then(r => r.json())
+      .then(data => {
+        library = data || [];
+        setStatus(`Library loaded. Episodes available: ${library.length}`);
+        buildShowsUI();
+      })
+      .catch(err => {
+        console.error(err);
+        setStatus("Error loading library.json. Make sure it’s in the same folder as this page.");
+      });
+  </script>
+</body>
+</html>
