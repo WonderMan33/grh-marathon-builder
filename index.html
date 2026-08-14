@@ -4,269 +4,883 @@
   <meta charset="UTF-8" />
   <title>Golden Radio Hour – Marathon Builder</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <style>
+    :root {
+      --red: #b5121b;
+      --red-dark: #941018;
+      --gold: #d99b20;
+      --gold-soft: #fff8e8;
+      --black: #161616;
+      --text: #242424;
+      --muted: #666666;
+      --line: #dddddd;
+      --line-light: #eeeeee;
+      --soft: #f7f7f7;
+      --white: #ffffff;
+      --danger: #a01b1b;
+      --success: #287a3c;
+      --shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #111;
-      color: #f5f5f5;
       margin: 0;
       padding: 0;
     }
+
+    body {
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background: #ffffff;
+      color: var(--text);
+    }
+
     .container {
-      max-width: 900px;
+      width: 100%;
+      max-width: 1050px;
       margin: 0 auto;
-      padding: 20px 16px 40px;
+      padding: 10px 12px 18px;
     }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+
+      padding: 5px 2px 14px;
+      margin-bottom: 12px;
+
+      border-bottom: 3px solid var(--red);
+    }
+
+    .eyebrow {
+      margin-bottom: 4px;
+
+      color: var(--red);
+
+      font-size: .7rem;
+      font-weight: 900;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
     h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.25rem;
+      margin: 0;
+
+      color: var(--black);
+
+      font-size: 1.7rem;
+      line-height: 1.15;
+      font-weight: 850;
     }
-    h2 {
-      font-size: 1.2rem;
-      margin-top: 1.5rem;
-      margin-bottom: 0.5rem;
+
+    .intro {
+      max-width: 720px;
+      margin: 6px 0 0;
+
+      color: var(--muted);
+
+      font-size: .88rem;
+      line-height: 1.45;
     }
+
+    .header-badge {
+      flex: 0 0 auto;
+
+      padding: 6px 10px;
+
+      border: 1px solid #e0c487;
+      border-radius: 4px;
+
+      background: var(--gold-soft);
+      color: #735614;
+
+      font-size: .72rem;
+      font-weight: 800;
+
+      white-space: nowrap;
+    }
+
     .card {
-      background: #1b1b1b;
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 12px;
-      border: 1px solid #333;
+      margin-top: 10px;
+      padding: 14px;
+
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--gold);
+      border-radius: 6px;
+
+      background: var(--white);
+
+      box-shadow: var(--shadow);
     }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin: 0;
+
+      color: var(--black);
+
+      font-size: 1.02rem;
+      line-height: 1.25;
+      font-weight: 850;
+    }
+
+    .step-label {
+      flex: 0 0 auto;
+
+      color: var(--red);
+
+      font-size: .7rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .small {
+      color: var(--muted);
+
+      font-size: .76rem;
+      line-height: 1.4;
+    }
+
+    /* SHOW PICKER */
+
     .shows-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 6px 14px;
-      max-height: 260px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+
+      gap: 5px 8px;
+
+      max-height: 280px;
+
       overflow-y: auto;
-      padding-right: 6px;
+      overflow-x: hidden;
+
+      padding: 4px 4px 4px 0;
+
+      scrollbar-width: thin;
+      scrollbar-color: #bcbcbc transparent;
     }
+
+    .shows-grid::-webkit-scrollbar {
+      width: 7px;
+    }
+
+    .shows-grid::-webkit-scrollbar-thumb {
+      background: #c6c6c6;
+      border-radius: 10px;
+    }
+
     label.show-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
+      gap: 7px;
+
+      min-height: 34px;
+
+      padding: 6px 8px;
+
+      border: 1px solid #e4e4e4;
+      border-radius: 4px;
+
+      background: #fafafa;
+
+      color: #292929;
+
+      font-size: .79rem;
+      line-height: 1.25;
+
       cursor: pointer;
+
+      transition:
+        background .12s ease,
+        border-color .12s ease;
     }
+
+    label.show-item:hover {
+      background: #fff8f8;
+      border-color: #d8aaaa;
+    }
+
+    label.show-item:has(input:checked) {
+      background: #fff3f3;
+      border-color: var(--red);
+      color: var(--red);
+      font-weight: 700;
+    }
+
     label.show-item input {
-      transform: scale(1.2);
-    }
-    .target-buttons button {
-      margin: 4px 6px 4px 0;
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: 1px solid #555;
-      background: #222;
-      color: #eee;
+      width: 16px;
+      height: 16px;
+
+      margin: 0;
+
+      accent-color: var(--red);
+
       cursor: pointer;
-      font-size: 0.9rem;
+
+      flex: 0 0 auto;
     }
-    .target-buttons button.active {
-      border-color: #ffd54f;
-      background: #333;
-    }
-    .actions {
-      margin-top: 12px;
+
+    /* TARGET LENGTH */
+
+    .target-buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+
+      margin-bottom: 8px;
     }
-    .actions button {
-      padding: 10px 18px;
-      border-radius: 6px;
-      border: none;
-      font-size: 0.95rem;
+
+    .target-buttons button {
+      min-width: 78px;
+      min-height: 38px;
+
+      padding: 0 14px;
+
+      border: 1px solid #cccccc;
+      border-radius: 4px;
+
+      background: #ffffff;
+      color: #333333;
+
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 800;
+
       cursor: pointer;
+
+      transition:
+        background .15s ease,
+        color .15s ease,
+        border-color .15s ease;
     }
-    #buildBtn {
-      background: #ffd54f;
-      color: #111;
-      font-weight: 600;
+
+    .target-buttons button:hover {
+      border-color: var(--red);
+      color: var(--red);
     }
-    #clearBtn {
-      background: #333;
-      color: #eee;
+
+    .target-buttons button.active {
+      border-color: var(--red);
+      background: var(--red);
+      color: #ffffff;
     }
-    #sendBtn {
-      background: #4caf50;
-      color: #111;
-      font-weight: 600;
-    }
-    #playlistOutput {
-      display: none; /* internal only */
-      width: 100%;
-      min-height: 180px;
-      background: #0d0d0d;
-      color: #eee;
-      border-radius: 6px;
-      border: 1px solid #333;
-      padding: 10px;
-      font-family: Consolas, Menlo, monospace;
-      font-size: 0.9rem;
-      resize: vertical;
-    }
-    .small {
-      font-size: 0.8rem;
-      color: #aaa;
-    }
-    .top-note {
-      font-size: 0.85rem;
-      color: #bbb;
-      margin-bottom: 0.5rem;
-    }
-    #status {
-      margin-top: 6px;
-      font-size: 0.85rem;
-      color: #ccc;
-    }
-    #senderName,
-    #userTitle {
-      width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      border-radius: 6px;
-      border: 1px solid #333;
-      background: #0d0d0d;
-      color: #eee;
-      font-size: 0.9rem;
-    }
+
+    /* BACKGROUND OPTIONS */
+
     .background-options {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 6px 12px;
-      margin-top: 6px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+
+      gap: 7px;
+
+      margin: 9px 0 8px;
     }
+
     .background-options label {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.85rem;
+      gap: 8px;
+
+      min-height: 42px;
+
+      padding: 7px 9px;
+
+      border: 1px solid #e1e1e1;
+      border-radius: 4px;
+
+      background: #fafafa;
+
+      color: #333333;
+
+      font-size: .78rem;
+      line-height: 1.3;
+
       cursor: pointer;
+
+      transition:
+        background .12s ease,
+        border-color .12s ease;
     }
+
+    .background-options label:hover {
+      border-color: #d0aaaa;
+    }
+
+    .background-options label:has(input:checked) {
+      border-color: var(--gold);
+      background: var(--gold-soft);
+      color: #6c5114;
+      font-weight: 700;
+    }
+
     .background-options input {
-      transform: scale(1.1);
+      width: 16px;
+      height: 16px;
+
+      margin: 0;
+
+      accent-color: var(--gold);
+
+      flex: 0 0 auto;
     }
+
+    /* FORM FIELDS */
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+
+      margin-top: 8px;
+    }
+
+    .field-label {
+      display: block;
+
+      margin-bottom: 5px;
+
+      color: #333;
+
+      font-size: .74rem;
+      font-weight: 800;
+    }
+
+    #senderName,
+    #userTitle {
+      width: 100%;
+      min-height: 40px;
+
+      padding: 8px 10px;
+
+      border: 1px solid #cccccc;
+      border-radius: 4px;
+
+      background: #ffffff;
+      color: var(--text);
+
+      font-family: inherit;
+      font-size: .83rem;
+
+      outline: none;
+    }
+
+    #senderName:focus,
+    #userTitle:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 2px rgba(181,18,27,.08);
+    }
+
+    /* ACTIONS */
+
+    .actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+
+      gap: 8px;
+
+      margin-top: 13px;
+    }
+
+    .actions button {
+      min-height: 40px;
+
+      padding: 0 16px;
+
+      border-radius: 4px;
+
+      font-family: inherit;
+      font-size: .79rem;
+      font-weight: 850;
+
+      cursor: pointer;
+
+      transition:
+        background .15s ease,
+        border-color .15s ease,
+        color .15s ease;
+    }
+
+    #buildBtn {
+      border: 1px solid var(--red);
+      background: var(--red);
+      color: #ffffff;
+    }
+
+    #buildBtn:hover {
+      border-color: var(--red-dark);
+      background: var(--red-dark);
+    }
+
+    #clearBtn {
+      border: 1px solid #cccccc;
+      background: #ffffff;
+      color: #555555;
+    }
+
+    #clearBtn:hover {
+      border-color: #999999;
+      color: #222222;
+    }
+
+    #sendBtn {
+      border: 1px solid var(--gold);
+      background: var(--gold);
+      color: #191919;
+    }
+
+    #sendBtn:hover {
+      background: #c78d18;
+      border-color: #c78d18;
+    }
+
+    #status {
+      min-height: 20px;
+
+      margin-top: 10px;
+
+      color: var(--muted);
+
+      font-size: .78rem;
+      line-height: 1.4;
+      font-weight: 650;
+    }
+
+    #playlistOutput {
+      display: none;
+
+      width: 100%;
+      min-height: 180px;
+
+      margin-top: 10px;
+
+      padding: 10px;
+
+      border: 1px solid var(--line);
+      border-radius: 4px;
+
+      background: #f6f6f6;
+      color: #222222;
+
+      font-family: Consolas, Menlo, monospace;
+      font-size: .8rem;
+
+      resize: vertical;
+    }
+
+    .bottom-note {
+      margin-top: 9px;
+      padding-top: 8px;
+
+      border-top: 1px solid var(--line-light);
+    }
+
+    @media (max-width: 850px) {
+      .shows-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .background-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
     @media (max-width: 600px) {
+      .container {
+        padding: 6px 7px 12px;
+      }
+
+      .page-header {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .header-badge {
+        display: none;
+      }
+
       h1 {
-        font-size: 1.4rem;
+        font-size: 1.35rem;
+      }
+
+      .intro {
+        font-size: .8rem;
+      }
+
+      .card {
+        padding: 11px;
+      }
+
+      .shows-grid {
+        grid-template-columns: 1fr;
+        max-height: 340px;
+      }
+
+      .background-options {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .target-buttons button {
+        flex: 1 1 calc(50% - 8px);
+      }
+
+      .actions button {
+        width: 100%;
       }
     }
   </style>
 </head>
+
 <body>
+
   <div class="container">
-    <h1>Golden Radio Hour – Marathon Builder</h1>
-    <div class="top-note">
-      Choose your favorite programs, pick a marathon length, and send Wade a custom marathon request. Your playlist will be built from the library and streamed on the channel.
-    </div>
 
-    <!-- 1. Program picker -->
-    <div class="card">
-      <h2>1. Choose Programs</h2>
-      <div id="showsContainer" class="shows-grid"></div>
-      <div class="small" style="margin-top:6px;">
-        Select one or more programs you want included in your custom marathon.
+    <div class="page-header">
+
+      <div>
+        <div class="eyebrow">
+          Golden Radio Hour
+        </div>
+
+        <h1>
+          Build Your Own Radio Marathon
+        </h1>
+
+        <p class="intro">
+          Choose your favorite programs, select a marathon length and atmosphere,
+          then submit your request for a future Golden Radio Hour stream.
+        </p>
       </div>
+
+      <div class="header-badge">
+        Listener Marathon Builder
+      </div>
+
     </div>
 
-    <!-- 2. Length picker -->
-    <div class="card">
-      <h2>2. Choose Target Length</h2>
+
+    <!-- STEP 1 -->
+    <section class="card">
+
+      <div class="card-header">
+        <h2>Choose Your Programs</h2>
+        <div class="step-label">Step 1</div>
+      </div>
+
+      <div
+        id="showsContainer"
+        class="shows-grid"
+      ></div>
+
+      <div
+        class="small"
+        style="margin-top:8px;"
+      >
+        Select one or more programs you would like included in your marathon.
+      </div>
+
+    </section>
+
+
+    <!-- STEP 2 -->
+    <section class="card">
+
+      <div class="card-header">
+        <h2>Choose Your Marathon Length</h2>
+        <div class="step-label">Step 2</div>
+      </div>
+
       <div class="target-buttons">
-        <button type="button" data-hours="3">3 hours</button>
-        <button type="button" data-hours="6">6 hours</button>
-        <button type="button" data-hours="9">9 hours</button>
-        <button type="button" data-hours="12" class="active">12 hours</button>
+
+        <button
+          type="button"
+          data-hours="3"
+        >
+          3 Hours
+        </button>
+
+        <button
+          type="button"
+          data-hours="6"
+        >
+          6 Hours
+        </button>
+
+        <button
+          type="button"
+          data-hours="9"
+        >
+          9 Hours
+        </button>
+
+        <button
+          type="button"
+          data-hours="12"
+          class="active"
+        >
+          12 Hours
+        </button>
+
       </div>
+
       <div class="small">
-        The builder will try to get as close to this length as possible.
+        The builder will create a playlist as close to your selected length as possible.
       </div>
-    </div>
 
-    <!-- 3. Background style -->
-    <div class="card">
-      <h2>3. Choose Background Style</h2>
+    </section>
+
+
+    <!-- STEP 3 -->
+    <section class="card">
+
+      <div class="card-header">
+        <h2>Choose an Atmosphere</h2>
+        <div class="step-label">Step 3</div>
+      </div>
+
       <div class="small">
-        This helps Wade decide what visual to use behind your marathon.
+        Pick the visual style you would like behind your marathon.
       </div>
-      <div class="background-options" id="backgroundOptions">
+
+      <div
+        class="background-options"
+        id="backgroundOptions"
+      >
+
         <label>
-          <input type="radio" name="background" value="Dark screen only" checked />
-          <span>Dark screen only</span>
+          <input
+            type="radio"
+            name="background"
+            value="Dark screen only"
+            checked
+          />
+          <span>Dark Screen</span>
         </label>
+
         <label>
-          <input type="radio" name="background" value="Fireplace / cozy room" />
-          <span>Fireplace / cozy room</span>
+          <input
+            type="radio"
+            name="background"
+            value="Fireplace / cozy room"
+          />
+          <span>Fireplace / Cozy Room</span>
         </label>
+
         <label>
-          <input type="radio" name="background" value="Rainy night window" />
-          <span>Rainy night window</span>
+          <input
+            type="radio"
+            name="background"
+            value="Rainy night window"
+          />
+          <span>Rainy Night Window</span>
         </label>
+
         <label>
-          <input type="radio" name="background" value="Vintage theater ambience" />
-          <span>Vintage theater ambience</span>
+          <input
+            type="radio"
+            name="background"
+            value="Vintage theater ambience"
+          />
+          <span>Vintage Theater</span>
         </label>
+
         <label>
-          <input type="radio" name="background" value="Starfield / space loop" />
-          <span>Starfield / space loop</span>
+          <input
+            type="radio"
+            name="background"
+            value="Starfield / space loop"
+          />
+          <span>Starfield / Space</span>
         </label>
+
       </div>
-      <div class="small" style="margin-top:6px;">
-        Final visuals may vary based on which background videos Wade has available.
+
+      <div class="small">
+        Final visuals may vary depending on the background footage available.
       </div>
-    </div>
 
-    <!-- 4. Sender + title + send -->
-    <div class="card">
-      <h2>4. Send Your Request</h2>
+    </section>
 
-      <div class="small">Your name or nickname (optional):</div>
-      <input id="senderName" type="text" placeholder="Example: Mary from Seattle" />
 
-      <div class="small" style="margin-top:8px;">Your marathon title idea (optional):</div>
-      <input id="userTitle" type="text" placeholder="Example: Frontier Trails & Fort Laramie Nights" />
+    <!-- STEP 4 -->
+    <section class="card">
+
+      <div class="card-header">
+        <h2>Submit Your Marathon Request</h2>
+        <div class="step-label">Step 4</div>
+      </div>
+
+      <div class="form-grid">
+
+        <div>
+          <label
+            class="field-label"
+            for="senderName"
+          >
+            Name or nickname (optional)
+          </label>
+
+          <input
+            id="senderName"
+            type="text"
+            placeholder="Example: Mary from Seattle"
+          />
+        </div>
+
+        <div>
+          <label
+            class="field-label"
+            for="userTitle"
+          >
+            Marathon title idea (optional)
+          </label>
+
+          <input
+            id="userTitle"
+            type="text"
+            placeholder="Example: Frontier Trails & Fort Laramie Nights"
+          />
+        </div>
+
+      </div>
+
 
       <div class="actions">
-        <button id="buildBtn">Create My Marathon</button>
-        <button id="clearBtn">Clear Selection</button>
-        <button id="sendBtn">Send to Wade</button>
+
+        <button id="buildBtn">
+          CREATE MY MARATHON
+        </button>
+
+        <button id="clearBtn">
+          CLEAR SELECTION
+        </button>
+
+        <button id="sendBtn">
+          SEND MARATHON REQUEST
+        </button>
+
       </div>
+
+
       <div id="status"></div>
 
-      <!-- Hidden playlist text (internal only, emailed to you) -->
       <textarea id="playlistOutput"></textarea>
 
-      <div class="small">
-        “Send to Wade” emails your request directly to him, including your programs, length, background choice, title idea, and the internal playlist. Episodes won’t show on this page yet while the builder is in testing.
+      <div class="small bottom-note">
+        Create your marathon first, then send the request.
+        Your selected programs, length, atmosphere, title idea and generated playlist
+        will be included automatically.
       </div>
-    </div>
+
+    </section>
+
   </div>
 
-  <!-- Hidden form (not used directly, but kept) -->
-  <form id="sendForm" action="https://formspree.io/f/mqarbnyg" method="POST" style="display:none;">
-    <input type="hidden" name="playlist" id="playlistField">
-    <input type="hidden" name="shows_selected" id="showsField">
-    <input type="hidden" name="target_hours" id="hoursField">
-    <input type="hidden" name="sender_name" id="senderNameField">
-    <input type="hidden" name="user_title" id="userTitleField">
-    <input type="hidden" name="background_choice" id="backgroundField">
+
+  <form
+    id="sendForm"
+    action="https://formspree.io/f/mqarbnyg"
+    method="POST"
+    style="display:none;"
+  >
+    <input
+      type="hidden"
+      name="playlist"
+      id="playlistField"
+    />
+
+    <input
+      type="hidden"
+      name="shows_selected"
+      id="showsField"
+    />
+
+    <input
+      type="hidden"
+      name="target_hours"
+      id="hoursField"
+    />
+
+    <input
+      type="hidden"
+      name="sender_name"
+      id="senderNameField"
+    />
+
+    <input
+      type="hidden"
+      name="user_title"
+      id="userTitleField"
+    />
+
+    <input
+      type="hidden"
+      name="background_choice"
+      id="backgroundField"
+    />
   </form>
+
 
   <script>
     let library = [];
     let targetSeconds = 12 * 3600;
 
-    const showsContainer = document.getElementById("showsContainer");
-    const playlistOutput = document.getElementById("playlistOutput");
-    const statusElem = document.getElementById("status");
+    const showsContainer =
+      document.getElementById("showsContainer");
 
-    const sendForm = document.getElementById("sendForm");
-    const playlistField = document.getElementById("playlistField");
-    const showsField = document.getElementById("showsField");
-    const hoursField = document.getElementById("hoursField");
-    const senderNameField = document.getElementById("senderNameField");
-    const userTitleField = document.getElementById("userTitleField");
-    const backgroundField = document.getElementById("backgroundField");
+    const playlistOutput =
+      document.getElementById("playlistOutput");
+
+    const statusElem =
+      document.getElementById("status");
+
+    const sendForm =
+      document.getElementById("sendForm");
+
+    const playlistField =
+      document.getElementById("playlistField");
+
+    const showsField =
+      document.getElementById("showsField");
+
+    const hoursField =
+      document.getElementById("hoursField");
+
+    const senderNameField =
+      document.getElementById("senderNameField");
+
+    const userTitleField =
+      document.getElementById("userTitleField");
+
+    const backgroundField =
+      document.getElementById("backgroundField");
+
 
     const allowedShows = [
       "BBC Collection",
@@ -347,256 +961,888 @@
       "Yours Truly, Johnny Dollar (Robert Readick)"
     ];
 
+
     function setStatus(msg) {
-      statusElem.textContent = msg || "";
+      statusElem.textContent =
+        msg || "";
     }
+
 
     function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+
+      for (
+        let i = array.length - 1;
+        i > 0;
+        i--
+      ) {
+
+        const j =
+          Math.floor(
+            Math.random() *
+            (i + 1)
+          );
+
+        [
+          array[i],
+          array[j]
+        ] = [
+          array[j],
+          array[i]
+        ];
+
       }
+
     }
 
+
     function secondsToHMS(sec) {
-      sec = Math.max(0, Math.floor(sec));
-      const h = String(Math.floor(sec / 3600)).padStart(2, "0");
-      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
-      const s = String(sec % 60).padStart(2, "0");
+
+      sec =
+        Math.max(
+          0,
+          Math.floor(sec)
+        );
+
+      const h =
+        String(
+          Math.floor(
+            sec / 3600
+          )
+        ).padStart(
+          2,
+          "0"
+        );
+
+      const m =
+        String(
+          Math.floor(
+            (sec % 3600) /
+            60
+          )
+        ).padStart(
+          2,
+          "0"
+        );
+
+      const s =
+        String(
+          sec % 60
+        ).padStart(
+          2,
+          "0"
+        );
+
       return `${h}:${m}:${s}`;
     }
 
+
     function normalize(str) {
-      return (str || "")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
+
+      return (
+        str ||
+        ""
+      )
+      .toLowerCase()
+      .replace(
+        /[^a-z0-9]+/g,
+        " "
+      )
+      .replace(
+        /\s+/g,
+        " "
+      )
+      .trim();
+
     }
 
-    function epMatchesSelection(ep, selectedCleanNames) {
-      const showNorm = normalize(ep.show);
-      const titleNorm = normalize(ep.episode_title);
-      const pathNorm = normalize(ep.file_path || ep.path || "");
 
-      for (const cleanName of selectedCleanNames) {
-        const cleanNorm = normalize(cleanName);
+    function epMatchesSelection(
+      ep,
+      selectedCleanNames
+    ) {
 
-        if (!showNorm && !titleNorm && !pathNorm) continue;
+      const showNorm =
+        normalize(
+          ep.show
+        );
+
+      const titleNorm =
+        normalize(
+          ep.episode_title
+        );
+
+      const pathNorm =
+        normalize(
+          ep.file_path ||
+          ep.path ||
+          ""
+        );
+
+
+      for (
+        const cleanName
+        of selectedCleanNames
+      ) {
+
+        const cleanNorm =
+          normalize(
+            cleanName
+          );
+
 
         if (
-          (showNorm && showNorm.includes(cleanNorm)) ||
-          (titleNorm && titleNorm.includes(cleanNorm)) ||
-          (pathNorm && pathNorm.includes(cleanNorm))
+          !showNorm &&
+          !titleNorm &&
+          !pathNorm
         ) {
-          return true;
+
+          continue;
+
         }
 
-        if (cleanNorm.startsWith("yours truly johnny dollar")) {
-          const base = "yours truly johnny dollar";
-          const actorPart = cleanNorm.replace(base, "").trim();
+
+        if (
+          (
+            showNorm &&
+            showNorm.includes(
+              cleanNorm
+            )
+          )
+          ||
+          (
+            titleNorm &&
+            titleNorm.includes(
+              cleanNorm
+            )
+          )
+          ||
+          (
+            pathNorm &&
+            pathNorm.includes(
+              cleanNorm
+            )
+          )
+        ) {
+
+          return true;
+
+        }
+
+
+        if (
+          cleanNorm.startsWith(
+            "yours truly johnny dollar"
+          )
+        ) {
+
+          const base =
+            "yours truly johnny dollar";
+
+          const actorPart =
+            cleanNorm
+              .replace(
+                base,
+                ""
+              )
+              .trim();
+
 
           const hasBase =
-            (showNorm && showNorm.includes(base)) ||
-            (titleNorm && titleNorm.includes(base)) ||
-            (pathNorm && pathNorm.includes(base));
+            (
+              showNorm &&
+              showNorm.includes(
+                base
+              )
+            )
+            ||
+            (
+              titleNorm &&
+              titleNorm.includes(
+                base
+              )
+            )
+            ||
+            (
+              pathNorm &&
+              pathNorm.includes(
+                base
+              )
+            );
 
-          if (!hasBase) continue;
+
+          if (!hasBase) {
+            continue;
+          }
+
 
           if (!actorPart) {
+
             return true;
+
           } else {
-            const actorTokens = actorPart.split(" ").filter(Boolean);
-            const lastName = actorTokens[actorTokens.length - 1];
+
+            const actorTokens =
+              actorPart
+                .split(" ")
+                .filter(Boolean);
+
+            const lastName =
+              actorTokens[
+                actorTokens.length - 1
+              ];
+
+
             if (
-              (showNorm && showNorm.includes(lastName)) ||
-              (titleNorm && titleNorm.includes(lastName)) ||
-              (pathNorm && pathNorm.includes(lastName))
+              (
+                showNorm &&
+                showNorm.includes(
+                  lastName
+                )
+              )
+              ||
+              (
+                titleNorm &&
+                titleNorm.includes(
+                  lastName
+                )
+              )
+              ||
+              (
+                pathNorm &&
+                pathNorm.includes(
+                  lastName
+                )
+              )
             ) {
+
               return true;
+
             }
+
           }
+
         }
 
-        if (cleanNorm === "bbc collection") {
+
+        if (
+          cleanNorm ===
+          "bbc collection"
+        ) {
+
           if (
-            showNorm.includes("bbc") ||
-            titleNorm.includes("bbc") ||
-            pathNorm.includes("bbc")
+            showNorm.includes(
+              "bbc"
+            )
+            ||
+            titleNorm.includes(
+              "bbc"
+            )
+            ||
+            pathNorm.includes(
+              "bbc"
+            )
           ) {
+
             return true;
+
           }
+
         }
+
       }
+
 
       return false;
     }
 
+
     function buildShowsUI() {
-      showsContainer.innerHTML = "";
-      const sorted = [...allowedShows].sort((a, b) => a.localeCompare(b));
-      sorted.forEach(show => {
-        const label = document.createElement("label");
-        label.className = "show-item";
 
-        const cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.value = show;
+      showsContainer.innerHTML =
+        "";
 
-        const span = document.createElement("span");
-        span.textContent = show;
 
-        label.appendChild(cb);
-        label.appendChild(span);
-        showsContainer.appendChild(label);
-      });
+      const sorted =
+        [...allowedShows]
+          .sort(
+            (a,b) =>
+              a.localeCompare(b)
+          );
+
+
+      sorted.forEach(
+        show => {
+
+          const label =
+            document.createElement(
+              "label"
+            );
+
+
+          label.className =
+            "show-item";
+
+
+          const cb =
+            document.createElement(
+              "input"
+            );
+
+
+          cb.type =
+            "checkbox";
+
+
+          cb.value =
+            show;
+
+
+          const span =
+            document.createElement(
+              "span"
+            );
+
+
+          span.textContent =
+            show;
+
+
+          label.appendChild(
+            cb
+          );
+
+
+          label.appendChild(
+            span
+          );
+
+
+          showsContainer.appendChild(
+            label
+          );
+
+        }
+      );
+
     }
+
 
     function getSelectedShows() {
+
       return Array.from(
-        showsContainer.querySelectorAll("input[type=checkbox]:checked")
-      ).map(cb => cb.value);
+
+        showsContainer
+          .querySelectorAll(
+            "input[type=checkbox]:checked"
+          )
+
+      )
+      .map(
+        cb =>
+          cb.value
+      );
+
     }
+
 
     function getSelectedBackground() {
-      const checked = document.querySelector("input[name='background']:checked");
-      return checked ? checked.value : "Dark screen only";
+
+      const checked =
+        document.querySelector(
+          "input[name='background']:checked"
+        );
+
+
+      return checked
+        ? checked.value
+        : "Dark screen only";
+
     }
+
 
     function buildMarathon() {
-      const selectedClean = getSelectedShows();
-      if (selectedClean.length === 0) {
-        setStatus("Please select at least one program.");
-        playlistOutput.value = "";
+
+      const selectedClean =
+        getSelectedShows();
+
+
+      if (
+        selectedClean.length === 0
+      ) {
+
+        setStatus(
+          "Please select at least one program."
+        );
+
+        playlistOutput.value =
+          "";
+
         return;
+
       }
 
-      const pool = library.filter(ep => epMatchesSelection(ep, selectedClean));
-      if (pool.length === 0) {
-        setStatus("No episodes found for the selected programs.");
-        playlistOutput.value = "";
+
+      const pool =
+        library.filter(
+          ep =>
+            epMatchesSelection(
+              ep,
+              selectedClean
+            )
+        );
+
+
+      if (
+        pool.length === 0
+      ) {
+
+        setStatus(
+          "No episodes found for the selected programs."
+        );
+
+        playlistOutput.value =
+          "";
+
         return;
+
       }
 
-      shuffle(pool);
 
-      const chosen = [];
-      let total = 0;
+      shuffle(
+        pool
+      );
 
-      for (const ep of pool) {
-        if (total + ep.duration_seconds > targetSeconds + 5 * 60) continue;
-        chosen.push(ep);
-        total += ep.duration_seconds;
-        if (total >= targetSeconds) break;
+
+      const chosen =
+        [];
+
+
+      let total =
+        0;
+
+
+      for (
+        const ep
+        of pool
+      ) {
+
+        if (
+          total +
+          ep.duration_seconds >
+          targetSeconds +
+          5 * 60
+        ) {
+
+          continue;
+
+        }
+
+
+        chosen.push(
+          ep
+        );
+
+
+        total +=
+          ep.duration_seconds;
+
+
+        if (
+          total >=
+          targetSeconds
+        ) {
+
+          break;
+
+        }
+
       }
 
-      if (chosen.length === 0) {
-        setStatus("Could not fit any episodes into the selected length.");
-        playlistOutput.value = "";
+
+      if (
+        chosen.length === 0
+      ) {
+
+        setStatus(
+          "Could not fit any episodes into the selected length."
+        );
+
+        playlistOutput.value =
+          "";
+
         return;
+
       }
 
-      let out = "";
-      let running = 0;
-      chosen.forEach((ep, idx) => {
-        const start = secondsToHMS(running);
-        out += `${idx + 1}. ${start} ${ep.show} - ${ep.episode_title}\n`;
-        running += ep.duration_seconds;
-      });
-      out += `\nTotal duration: ${secondsToHMS(running)}\n`;
 
-      playlistOutput.value = out.trim();
-      setStatus(`Marathon request created (~${secondsToHMS(running)}). Click "Send to Wade" to submit it.`);
+      let out =
+        "";
+
+
+      let running =
+        0;
+
+
+      chosen.forEach(
+        (ep,index) => {
+
+          const start =
+            secondsToHMS(
+              running
+            );
+
+
+          out +=
+            `${index + 1}. ${start} ${ep.show} - ${ep.episode_title}\n`;
+
+
+          running +=
+            ep.duration_seconds;
+
+        }
+      );
+
+
+      out +=
+        `\nTotal duration: ${secondsToHMS(running)}\n`;
+
+
+      playlistOutput.value =
+        out.trim();
+
+
+      setStatus(
+        `Marathon created (~${secondsToHMS(running)}). Click "SEND MARATHON REQUEST" when you're ready.`
+      );
+
     }
 
-    document.querySelectorAll(".target-buttons button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".target-buttons button").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const hours = parseInt(btn.dataset.hours, 10) || 12;
-        targetSeconds = hours * 3600;
-      });
-    });
 
-    document.getElementById("buildBtn").addEventListener("click", buildMarathon);
+    document
+      .querySelectorAll(
+        ".target-buttons button"
+      )
+      .forEach(
+        btn => {
 
-    document.getElementById("clearBtn").addEventListener("click", () => {
-      showsContainer.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
-      playlistOutput.value = "";
-      setStatus("");
-    });
+          btn.addEventListener(
+            "click",
+            () => {
 
-    // Fetch-based send with detailed error messages
-    document.getElementById("sendBtn").addEventListener("click", async () => {
-      const text = playlistOutput.value.trim();
-      if (!text) {
-        setStatus("Nothing to send yet. Click 'Create My Marathon' first.");
-        return;
-      }
+              document
+                .querySelectorAll(
+                  ".target-buttons button"
+                )
+                .forEach(
+                  b =>
+                    b.classList.remove(
+                      "active"
+                    )
+                );
 
-      const selectedClean = getSelectedShows();
-      const activeBtn = document.querySelector(".target-buttons button.active");
-      const hours = activeBtn ? activeBtn.dataset.hours : "12";
-      const senderName = document.getElementById("senderName").value.trim();
-      const userTitle = document.getElementById("userTitle").value.trim();
-      const backgroundChoice = getSelectedBackground();
 
-      const payload = {
-        playlist: text,
-        shows_selected: selectedClean.join(", "),
-        target_hours: hours,
-        sender_name: senderName,
-        user_title: userTitle,
-        background_choice: backgroundChoice
-      };
+              btn.classList.add(
+                "active"
+              );
 
-      setStatus("Sending playlist to Wade...");
 
-      try {
-        const res = await fetch("https://formspree.io/f/mqarbnyg", {
-          method: "POST",
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
+              const hours =
+                parseInt(
+                  btn.dataset.hours,
+                  10
+                ) ||
+                12;
 
-        let data = null;
-        try {
-          data = await res.json();
-        } catch (e) {
-          // ignore JSON parse errors
+
+              targetSeconds =
+                hours *
+                3600;
+
+            }
+          );
+
         }
+      );
 
-        if (res.ok) {
-          setStatus("Sent! Your marathon request has been delivered to Formspree.");
-        } else {
-          let msg = "There was a problem sending your request.";
-          if (data && data.errors && data.errors.length > 0) {
-            msg += " " + data.errors.map(e => e.message || "").join(" ");
-          } else {
-            msg += ` (HTTP ${res.status})`;
+
+    document
+      .getElementById(
+        "buildBtn"
+      )
+      .addEventListener(
+        "click",
+        buildMarathon
+      );
+
+
+    document
+      .getElementById(
+        "clearBtn"
+      )
+      .addEventListener(
+        "click",
+        () => {
+
+          showsContainer
+            .querySelectorAll(
+              "input[type=checkbox]"
+            )
+            .forEach(
+              cb =>
+                cb.checked =
+                  false
+            );
+
+
+          playlistOutput.value =
+            "";
+
+
+          setStatus(
+            ""
+          );
+
+        }
+      );
+
+
+    document
+      .getElementById(
+        "sendBtn"
+      )
+      .addEventListener(
+        "click",
+        async () => {
+
+          const text =
+            playlistOutput
+              .value
+              .trim();
+
+
+          if (!text) {
+
+            setStatus(
+              'Nothing to send yet. Click "CREATE MY MARATHON" first.'
+            );
+
+            return;
+
           }
-          setStatus(msg);
-        }
-      } catch (err) {
-        console.error(err);
-        setStatus("Network error while sending your request.");
-      }
-    });
 
-    fetch("library.json")
-      .then(r => r.json())
-      .then(data => {
-        library = data || [];
-        setStatus(`Library loaded. Episodes available: ${library.length}`);
+
+          const selectedClean =
+            getSelectedShows();
+
+
+          const activeBtn =
+            document.querySelector(
+              ".target-buttons button.active"
+            );
+
+
+          const hours =
+            activeBtn
+              ? activeBtn.dataset.hours
+              : "12";
+
+
+          const senderName =
+            document
+              .getElementById(
+                "senderName"
+              )
+              .value
+              .trim();
+
+
+          const userTitle =
+            document
+              .getElementById(
+                "userTitle"
+              )
+              .value
+              .trim();
+
+
+          const backgroundChoice =
+            getSelectedBackground();
+
+
+          const payload = {
+
+            playlist:
+              text,
+
+            shows_selected:
+              selectedClean.join(
+                ", "
+              ),
+
+            target_hours:
+              hours,
+
+            sender_name:
+              senderName,
+
+            user_title:
+              userTitle,
+
+            background_choice:
+              backgroundChoice
+
+          };
+
+
+          setStatus(
+            "Sending your marathon request..."
+          );
+
+
+          try {
+
+            const res =
+              await fetch(
+                "https://formspree.io/f/mqarbnyg",
+                {
+                  method:
+                    "POST",
+
+                  headers: {
+                    "Accept":
+                      "application/json",
+
+                    "Content-Type":
+                      "application/json"
+                  },
+
+                  body:
+                    JSON.stringify(
+                      payload
+                    )
+                }
+              );
+
+
+            let data =
+              null;
+
+
+            try {
+
+              data =
+                await res.json();
+
+            } catch (e) {
+
+              /* Ignore JSON parse errors */
+
+            }
+
+
+            if (
+              res.ok
+            ) {
+
+              setStatus(
+                "Sent! Your Golden Radio Hour marathon request has been submitted."
+              );
+
+            } else {
+
+              let msg =
+                "There was a problem sending your request.";
+
+
+              if (
+                data &&
+                data.errors &&
+                data.errors.length > 0
+              ) {
+
+                msg +=
+                  " " +
+                  data.errors
+                    .map(
+                      e =>
+                        e.message ||
+                        ""
+                    )
+                    .join(
+                      " "
+                    );
+
+              } else {
+
+                msg +=
+                  ` (HTTP ${res.status})`;
+
+              }
+
+
+              setStatus(
+                msg
+              );
+
+            }
+
+          } catch (err) {
+
+            console.error(
+              err
+            );
+
+
+            setStatus(
+              "Network error while sending your request."
+            );
+
+          }
+
+        }
+      );
+
+
+    fetch(
+      "library.json"
+    )
+    .then(
+      r =>
+        r.json()
+    )
+    .then(
+      data => {
+
+        library =
+          data ||
+          [];
+
+
+        setStatus(
+          `Library loaded. ${library.length.toLocaleString()} episodes available.`
+        );
+
+
         buildShowsUI();
-      })
-      .catch(err => {
-        console.error(err);
-        setStatus("Error loading library.json. Make sure it’s in the same folder as this page.");
-      });
+
+      }
+    )
+    .catch(
+      err => {
+
+        console.error(
+          err
+        );
+
+
+        setStatus(
+          "Error loading library.json. Make sure it is in the same folder as this page."
+        );
+
+      }
+    );
+
   </script>
+
 </body>
 </html>
