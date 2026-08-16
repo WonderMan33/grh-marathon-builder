@@ -1,39 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8" />
-  <title>Golden Radio Hour – Marathon Builder</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>
+    Golden Radio Hour – Marathon Builder
+  </title>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  />
+
 
   <style>
-    :root {
-      --red: #b5121b;
-      --red-dark: #941018;
-      --gold: #d99b20;
-      --gold-soft: #fff8e8;
-      --black: #161616;
-      --text: #242424;
-      --muted: #666666;
-      --line: #dddddd;
-      --line-light: #eeeeee;
-      --soft: #f7f7f7;
-      --white: #ffffff;
-      --danger: #a01b1b;
-      --success: #287a3c;
-      --shadow: 0 8px 24px rgba(0,0,0,.08);
+
+    :root{
+      --red:#b5121b;
+      --red-dark:#941018;
+      --gold:#d99b20;
+      --gold-soft:#fff8e8;
+      --black:#161616;
+      --text:#242424;
+      --muted:#666666;
+      --line:#dddddd;
+      --line-light:#eeeeee;
+      --soft:#f7f7f7;
+      --white:#ffffff;
+      --danger:#a01b1b;
+      --success:#287a3c;
+      --shadow:0 8px 24px rgba(0,0,0,.08);
     }
 
-    * {
-      box-sizing: border-box;
+
+    *{
+      box-sizing:border-box;
     }
+
 
     html,
-    body {
-      margin: 0;
-      padding: 0;
+    body{
+      margin:0;
+      padding:0;
     }
 
-    body {
+
+    body{
       font-family:
         Inter,
         system-ui,
@@ -42,233 +56,384 @@
         "Segoe UI",
         sans-serif;
 
-      background: #ffffff;
-      color: var(--text);
+      background:#ffffff;
+      color:var(--text);
     }
 
-    .container {
-      width: 100%;
-      max-width: 1050px;
-      margin: 0 auto;
-      padding: 10px 12px 18px;
+
+    .container{
+      width:100%;
+      max-width:1050px;
+
+      margin:0 auto;
+
+      padding:
+        10px
+        12px
+        18px;
     }
 
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 20px;
 
-      padding: 5px 2px 14px;
-      margin-bottom: 12px;
+    /* =========================================
+       HEADER
+       ========================================= */
 
-      border-bottom: 3px solid var(--red);
+    .page-header{
+      display:flex;
+
+      justify-content:space-between;
+      align-items:flex-start;
+
+      gap:20px;
+
+      padding:
+        5px
+        2px
+        14px;
+
+      margin-bottom:12px;
+
+      border-bottom:
+        3px solid var(--red);
     }
 
-    .eyebrow {
-      margin-bottom: 4px;
 
-      color: var(--red);
-
-      font-size: .7rem;
-      font-weight: 900;
-      letter-spacing: .13em;
-      text-transform: uppercase;
+    .header-copy{
+      min-width:0;
     }
 
-    h1 {
-      margin: 0;
 
-      color: var(--black);
+    .eyebrow{
+      margin-bottom:4px;
 
-      font-size: 1.7rem;
-      line-height: 1.15;
-      font-weight: 850;
+      color:var(--red);
+
+      font-size:.7rem;
+      font-weight:900;
+
+      letter-spacing:.13em;
+      text-transform:uppercase;
     }
 
-    .intro {
-      max-width: 720px;
-      margin: 6px 0 0;
 
-      color: var(--muted);
+    h1{
+      margin:0;
 
-      font-size: .88rem;
-      line-height: 1.45;
+      color:var(--black);
+
+      font-size:1.7rem;
+      line-height:1.15;
+
+      font-weight:850;
     }
 
-    .header-badge {
-      flex: 0 0 auto;
 
-      padding: 6px 10px;
+    .intro{
+      max-width:760px;
 
-      border: 1px solid #e0c487;
-      border-radius: 4px;
+      margin:
+        6px
+        0
+        0;
 
-      background: var(--gold-soft);
-      color: #735614;
+      color:var(--muted);
 
-      font-size: .72rem;
-      font-weight: 800;
-
-      white-space: nowrap;
+      font-size:.88rem;
+      line-height:1.45;
     }
 
-    .card {
-      margin-top: 10px;
-      padding: 14px;
 
-      border: 1px solid var(--line);
-      border-left: 4px solid var(--gold);
-      border-radius: 6px;
-
-      background: var(--white);
-
-      box-shadow: var(--shadow);
+    .youtube-row{
+      margin-top:10px;
     }
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
 
-      margin-bottom: 10px;
+    .youtube-button{
+      display:inline-flex;
+
+      align-items:center;
+      justify-content:center;
+
+      min-height:36px;
+
+      padding:
+        0
+        13px;
+
+      border:
+        1px solid var(--red);
+
+      border-radius:5px;
+
+      background:var(--red);
+
+      color:#ffffff;
+
+      font-size:.75rem;
+      font-weight:850;
+
+      text-decoration:none;
+
+      transition:
+        background .15s ease,
+        border-color .15s ease,
+        transform .15s ease;
     }
 
-    h2 {
-      margin: 0;
 
-      color: var(--black);
+    .youtube-button:hover{
+      background:var(--red-dark);
+      border-color:var(--red-dark);
 
-      font-size: 1.02rem;
-      line-height: 1.25;
-      font-weight: 850;
+      color:#ffffff;
+
+      transform:
+        translateY(-1px);
     }
 
-    .step-label {
-      flex: 0 0 auto;
 
-      color: var(--red);
+    .header-badge{
+      flex:0 0 auto;
 
-      font-size: .7rem;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
+      padding:
+        6px
+        10px;
+
+      border:
+        1px solid #e0c487;
+
+      border-radius:4px;
+
+      background:var(--gold-soft);
+
+      color:#735614;
+
+      font-size:.72rem;
+      font-weight:800;
+
+      white-space:nowrap;
     }
 
-    .small {
-      color: var(--muted);
 
-      font-size: .76rem;
-      line-height: 1.4;
+    /* =========================================
+       CARDS
+       ========================================= */
+
+    .card{
+      margin-top:10px;
+
+      padding:14px;
+
+      border:
+        1px solid var(--line);
+
+      border-left:
+        4px solid var(--gold);
+
+      border-radius:6px;
+
+      background:var(--white);
+
+      box-shadow:var(--shadow);
     }
 
-    /* SHOW PICKER */
 
-    .shows-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .card-header{
+      display:flex;
 
-      gap: 5px 8px;
+      justify-content:space-between;
+      align-items:center;
 
-      max-height: 280px;
+      gap:12px;
 
-      overflow-y: auto;
-      overflow-x: hidden;
-
-      padding: 4px 4px 4px 0;
-
-      scrollbar-width: thin;
-      scrollbar-color: #bcbcbc transparent;
+      margin-bottom:10px;
     }
 
-    .shows-grid::-webkit-scrollbar {
-      width: 7px;
+
+    h2{
+      margin:0;
+
+      color:var(--black);
+
+      font-size:1.02rem;
+      line-height:1.25;
+
+      font-weight:850;
     }
 
-    .shows-grid::-webkit-scrollbar-thumb {
-      background: #c6c6c6;
-      border-radius: 10px;
+
+    .step-label{
+      flex:0 0 auto;
+
+      color:var(--red);
+
+      font-size:.7rem;
+      font-weight:900;
+
+      letter-spacing:.08em;
+      text-transform:uppercase;
     }
 
-    label.show-item {
-      display: flex;
-      align-items: center;
-      gap: 7px;
 
-      min-height: 34px;
+    .small{
+      color:var(--muted);
 
-      padding: 6px 8px;
+      font-size:.76rem;
+      line-height:1.4;
+    }
 
-      border: 1px solid #e4e4e4;
-      border-radius: 4px;
 
-      background: #fafafa;
+    /* =========================================
+       SHOW PICKER
+       ========================================= */
 
-      color: #292929;
+    .shows-grid{
+      display:grid;
 
-      font-size: .79rem;
-      line-height: 1.25;
+      grid-template-columns:
+        repeat(
+          3,
+          minmax(0,1fr)
+        );
 
-      cursor: pointer;
+      gap:
+        5px
+        8px;
+
+      max-height:280px;
+
+      overflow-y:auto;
+      overflow-x:hidden;
+
+      padding:
+        4px
+        4px
+        4px
+        0;
+
+      scrollbar-width:thin;
+
+      scrollbar-color:
+        #bcbcbc
+        transparent;
+    }
+
+
+    .shows-grid::-webkit-scrollbar{
+      width:7px;
+    }
+
+
+    .shows-grid::-webkit-scrollbar-thumb{
+      background:#c6c6c6;
+
+      border-radius:10px;
+    }
+
+
+    label.show-item{
+      display:flex;
+
+      align-items:center;
+
+      gap:7px;
+
+      min-height:34px;
+
+      padding:
+        6px
+        8px;
+
+      border:
+        1px solid #e4e4e4;
+
+      border-radius:4px;
+
+      background:#fafafa;
+
+      color:#292929;
+
+      font-size:.79rem;
+      line-height:1.25;
+
+      cursor:pointer;
 
       transition:
         background .12s ease,
         border-color .12s ease;
     }
 
-    label.show-item:hover {
-      background: #fff8f8;
-      border-color: #d8aaaa;
+
+    label.show-item:hover{
+      background:#fff8f8;
+
+      border-color:#d8aaaa;
     }
 
-    label.show-item:has(input:checked) {
-      background: #fff3f3;
-      border-color: var(--red);
-      color: var(--red);
-      font-weight: 700;
+
+    label.show-item:has(input:checked){
+      background:#fff3f3;
+
+      border-color:var(--red);
+
+      color:var(--red);
+
+      font-weight:700;
     }
 
-    label.show-item input {
-      width: 16px;
-      height: 16px;
 
-      margin: 0;
+    label.show-item input{
+      width:16px;
+      height:16px;
 
-      accent-color: var(--red);
+      margin:0;
 
-      cursor: pointer;
+      accent-color:var(--red);
 
-      flex: 0 0 auto;
+      cursor:pointer;
+
+      flex:0 0 auto;
     }
 
-    /* TARGET LENGTH */
 
-    .target-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+    /* =========================================
+       TARGET LENGTH
+       ========================================= */
 
-      margin-bottom: 8px;
+    .target-buttons{
+      display:flex;
+
+      flex-wrap:wrap;
+
+      gap:8px;
+
+      margin-bottom:8px;
     }
 
-    .target-buttons button {
-      min-width: 78px;
-      min-height: 38px;
 
-      padding: 0 14px;
+    .target-buttons button{
+      min-width:78px;
+      min-height:38px;
 
-      border: 1px solid #cccccc;
-      border-radius: 4px;
+      padding:
+        0
+        14px;
 
-      background: #ffffff;
-      color: #333333;
+      border:
+        1px solid #cccccc;
 
-      font-family: inherit;
-      font-size: .8rem;
-      font-weight: 800;
+      border-radius:4px;
 
-      cursor: pointer;
+      background:#ffffff;
+
+      color:#333333;
+
+      font-family:inherit;
+
+      font-size:.8rem;
+      font-weight:800;
+
+      cursor:pointer;
 
       transition:
         background .15s ease,
@@ -276,146 +441,204 @@
         border-color .15s ease;
     }
 
-    .target-buttons button:hover {
-      border-color: var(--red);
-      color: var(--red);
+
+    .target-buttons button:hover{
+      border-color:var(--red);
+
+      color:var(--red);
     }
 
-    .target-buttons button.active {
-      border-color: var(--red);
-      background: var(--red);
-      color: #ffffff;
+
+    .target-buttons button.active{
+      border-color:var(--red);
+
+      background:var(--red);
+
+      color:#ffffff;
     }
 
-    /* BACKGROUND OPTIONS */
 
-    .background-options {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    /* =========================================
+       BACKGROUND OPTIONS
+       ========================================= */
 
-      gap: 7px;
+    .background-options{
+      display:grid;
 
-      margin: 9px 0 8px;
+      grid-template-columns:
+        repeat(
+          3,
+          minmax(0,1fr)
+        );
+
+      gap:7px;
+
+      margin:
+        9px
+        0
+        8px;
     }
 
-    .background-options label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
 
-      min-height: 42px;
+    .background-options label{
+      display:flex;
 
-      padding: 7px 9px;
+      align-items:center;
 
-      border: 1px solid #e1e1e1;
-      border-radius: 4px;
+      gap:8px;
 
-      background: #fafafa;
+      min-height:42px;
 
-      color: #333333;
+      padding:
+        7px
+        9px;
 
-      font-size: .78rem;
-      line-height: 1.3;
+      border:
+        1px solid #e1e1e1;
 
-      cursor: pointer;
+      border-radius:4px;
+
+      background:#fafafa;
+
+      color:#333333;
+
+      font-size:.78rem;
+      line-height:1.3;
+
+      cursor:pointer;
 
       transition:
         background .12s ease,
         border-color .12s ease;
     }
 
-    .background-options label:hover {
-      border-color: #d0aaaa;
+
+    .background-options label:hover{
+      border-color:#d0aaaa;
     }
 
-    .background-options label:has(input:checked) {
-      border-color: var(--gold);
-      background: var(--gold-soft);
-      color: #6c5114;
-      font-weight: 700;
+
+    .background-options label:has(input:checked){
+      border-color:var(--gold);
+
+      background:var(--gold-soft);
+
+      color:#6c5114;
+
+      font-weight:700;
     }
 
-    .background-options input {
-      width: 16px;
-      height: 16px;
 
-      margin: 0;
+    .background-options input{
+      width:16px;
+      height:16px;
 
-      accent-color: var(--gold);
+      margin:0;
 
-      flex: 0 0 auto;
+      accent-color:var(--gold);
+
+      flex:0 0 auto;
     }
 
-    /* FORM FIELDS */
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    /* =========================================
+       FORM
+       ========================================= */
 
-      margin-top: 8px;
+    .form-grid{
+      display:grid;
+
+      grid-template-columns:
+        1fr
+        1fr;
+
+      gap:12px;
+
+      margin-top:8px;
     }
 
-    .field-label {
-      display: block;
 
-      margin-bottom: 5px;
+    .field-label{
+      display:block;
 
-      color: #333;
+      margin-bottom:5px;
 
-      font-size: .74rem;
-      font-weight: 800;
+      color:#333;
+
+      font-size:.74rem;
+      font-weight:800;
     }
+
 
     #senderName,
-    #userTitle {
-      width: 100%;
-      min-height: 40px;
+    #userTitle{
+      width:100%;
 
-      padding: 8px 10px;
+      min-height:40px;
 
-      border: 1px solid #cccccc;
-      border-radius: 4px;
+      padding:
+        8px
+        10px;
 
-      background: #ffffff;
-      color: var(--text);
+      border:
+        1px solid #cccccc;
 
-      font-family: inherit;
-      font-size: .83rem;
+      border-radius:4px;
 
-      outline: none;
+      background:#ffffff;
+
+      color:var(--text);
+
+      font-family:inherit;
+
+      font-size:.83rem;
+
+      outline:none;
     }
+
 
     #senderName:focus,
-    #userTitle:focus {
-      border-color: var(--red);
-      box-shadow: 0 0 0 2px rgba(181,18,27,.08);
+    #userTitle:focus{
+      border-color:var(--red);
+
+      box-shadow:
+        0 0 0 2px
+        rgba(181,18,27,.08);
     }
 
-    /* ACTIONS */
 
-    .actions {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
+    /* =========================================
+       ACTIONS
+       ========================================= */
 
-      gap: 8px;
+    .actions{
+      display:flex;
 
-      margin-top: 13px;
+      align-items:center;
+
+      flex-wrap:wrap;
+
+      gap:8px;
+
+      margin-top:13px;
     }
 
-    .actions button {
-      min-height: 40px;
 
-      padding: 0 16px;
+    .actions button{
+      min-height:40px;
 
-      border-radius: 4px;
+      padding:
+        0
+        16px;
 
-      font-family: inherit;
-      font-size: .79rem;
-      font-weight: 850;
+      border-radius:4px;
 
-      cursor: pointer;
+      font-family:inherit;
+
+      font-size:.79rem;
+      font-weight:850;
+
+      cursor:pointer;
 
       transition:
         background .15s ease,
@@ -423,200 +646,350 @@
         color .15s ease;
     }
 
-    #buildBtn {
-      border: 1px solid var(--red);
-      background: var(--red);
-      color: #ffffff;
+
+    #buildBtn{
+      border:
+        1px solid var(--red);
+
+      background:var(--red);
+
+      color:#ffffff;
     }
 
-    #buildBtn:hover {
-      border-color: var(--red-dark);
-      background: var(--red-dark);
+
+    #buildBtn:hover{
+      border-color:var(--red-dark);
+
+      background:var(--red-dark);
     }
 
-    #clearBtn {
-      border: 1px solid #cccccc;
-      background: #ffffff;
-      color: #555555;
+
+    #clearBtn{
+      border:
+        1px solid #cccccc;
+
+      background:#ffffff;
+
+      color:#555555;
     }
 
-    #clearBtn:hover {
-      border-color: #999999;
-      color: #222222;
+
+    #clearBtn:hover{
+      border-color:#999999;
+
+      color:#222222;
     }
 
-    #sendBtn {
-      border: 1px solid var(--gold);
-      background: var(--gold);
-      color: #191919;
+
+    #sendBtn{
+      border:
+        1px solid var(--gold);
+
+      background:var(--gold);
+
+      color:#191919;
     }
 
-    #sendBtn:hover {
-      background: #c78d18;
-      border-color: #c78d18;
+
+    #sendBtn:hover{
+      background:#c78d18;
+
+      border-color:#c78d18;
     }
 
-    #status {
-      min-height: 20px;
 
-      margin-top: 10px;
+    #status{
+      min-height:20px;
 
-      color: var(--muted);
+      margin-top:10px;
 
-      font-size: .78rem;
-      line-height: 1.4;
-      font-weight: 650;
+      color:var(--muted);
+
+      font-size:.78rem;
+      line-height:1.4;
+
+      font-weight:650;
     }
 
-    #playlistOutput {
-      display: none;
 
-      width: 100%;
-      min-height: 180px;
+    #playlistOutput{
+      display:none;
 
-      margin-top: 10px;
+      width:100%;
 
-      padding: 10px;
+      min-height:180px;
 
-      border: 1px solid var(--line);
-      border-radius: 4px;
+      margin-top:10px;
 
-      background: #f6f6f6;
-      color: #222222;
+      padding:10px;
 
-      font-family: Consolas, Menlo, monospace;
-      font-size: .8rem;
+      border:
+        1px solid var(--line);
 
-      resize: vertical;
+      border-radius:4px;
+
+      background:#f6f6f6;
+
+      color:#222222;
+
+      font-family:
+        Consolas,
+        Menlo,
+        monospace;
+
+      font-size:.8rem;
+
+      resize:vertical;
     }
 
-    .bottom-note {
-      margin-top: 9px;
-      padding-top: 8px;
 
-      border-top: 1px solid var(--line-light);
+    .bottom-note{
+      margin-top:9px;
+
+      padding-top:8px;
+
+      border-top:
+        1px solid var(--line-light);
     }
 
-    @media (max-width: 850px) {
-      .shows-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    /* =========================================
+       TABLET
+       ========================================= */
+
+    @media(max-width:850px){
+
+      .shows-grid{
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(0,1fr)
+          );
       }
 
-      .background-options {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      .background-options{
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(0,1fr)
+          );
       }
+
     }
 
-    @media (max-width: 600px) {
-      .container {
-        padding: 6px 7px 12px;
+
+    /* =========================================
+       MOBILE
+       ========================================= */
+
+    @media(max-width:600px){
+
+      .container{
+        padding:
+          6px
+          7px
+          12px;
       }
 
-      .page-header {
-        flex-direction: column;
-        gap: 8px;
+
+      .page-header{
+        flex-direction:column;
+
+        gap:8px;
       }
 
-      .header-badge {
-        display: none;
+
+      .header-badge{
+        display:none;
       }
 
-      h1 {
-        font-size: 1.35rem;
+
+      h1{
+        font-size:1.35rem;
       }
 
-      .intro {
-        font-size: .8rem;
+
+      .intro{
+        font-size:.8rem;
       }
 
-      .card {
-        padding: 11px;
+
+      .youtube-button{
+        width:100%;
+
+        min-height:40px;
       }
 
-      .shows-grid {
-        grid-template-columns: 1fr;
-        max-height: 340px;
+
+      .card{
+        padding:11px;
       }
 
-      .background-options {
-        grid-template-columns: 1fr;
+
+      .shows-grid{
+        grid-template-columns:1fr;
+
+        max-height:340px;
       }
 
-      .form-grid {
-        grid-template-columns: 1fr;
+
+      .background-options{
+        grid-template-columns:1fr;
       }
 
-      .target-buttons button {
-        flex: 1 1 calc(50% - 8px);
+
+      .form-grid{
+        grid-template-columns:1fr;
       }
 
-      .actions button {
-        width: 100%;
+
+      .target-buttons button{
+        flex:
+          1
+          1
+          calc(50% - 8px);
       }
+
+
+      .actions button{
+        width:100%;
+      }
+
     }
+
   </style>
+
 </head>
+
 
 <body>
 
+
   <div class="container">
+
+
+    <!-- =====================================
+         HEADER
+         ===================================== -->
 
     <div class="page-header">
 
-      <div>
+
+      <div class="header-copy">
+
+
         <div class="eyebrow">
           Golden Radio Hour
         </div>
+
 
         <h1>
           Build Your Own Radio Marathon
         </h1>
 
+
         <p class="intro">
-          Choose your favorite programs, select a marathon length and atmosphere,
-          then submit your request for a future Golden Radio Hour stream.
+
+          Choose your favorite old time radio programs,
+          select a marathon length and atmosphere,
+          then submit your custom lineup.
+
+          Your finished marathon can be created for
+          Golden Radio Hour and enjoyed on our YouTube channel.
+
         </p>
+
+
+        <div class="youtube-row">
+
+          <a
+            class="youtube-button"
+            href="https://www.youtube.com/@GoldenRadioHour"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ▶ View Our YouTube Channel
+          </a>
+
+        </div>
+
+
       </div>
+
 
       <div class="header-badge">
         Listener Marathon Builder
       </div>
 
+
     </div>
 
 
-    <!-- STEP 1 -->
+
+    <!-- =====================================
+         STEP 1
+         ===================================== -->
+
     <section class="card">
 
+
       <div class="card-header">
-        <h2>Choose Your Programs</h2>
-        <div class="step-label">Step 1</div>
+
+        <h2>
+          Choose Your Programs
+        </h2>
+
+        <div class="step-label">
+          Step 1
+        </div>
+
       </div>
+
 
       <div
         id="showsContainer"
         class="shows-grid"
       ></div>
 
+
       <div
         class="small"
         style="margin-top:8px;"
       >
-        Select one or more programs you would like included in your marathon.
+
+        Select one or more programs you would like
+        included in your marathon.
+
       </div>
+
 
     </section>
 
 
-    <!-- STEP 2 -->
+
+    <!-- =====================================
+         STEP 2
+         ===================================== -->
+
     <section class="card">
 
+
       <div class="card-header">
-        <h2>Choose Your Marathon Length</h2>
-        <div class="step-label">Step 2</div>
+
+        <h2>
+          Choose Your Marathon Length
+        </h2>
+
+        <div class="step-label">
+          Step 2
+        </div>
+
       </div>
 
+
       <div class="target-buttons">
+
 
         <button
           type="button"
@@ -625,6 +998,7 @@
           3 Hours
         </button>
 
+
         <button
           type="button"
           data-hours="6"
@@ -632,12 +1006,14 @@
           6 Hours
         </button>
 
+
         <button
           type="button"
           data-hours="9"
         >
           9 Hours
         </button>
+
 
         <button
           type="button"
@@ -647,98 +1023,172 @@
           12 Hours
         </button>
 
+
       </div>
 
+
       <div class="small">
-        The builder will create a playlist as close to your selected length as possible.
+
+        The builder will create a playlist as close
+        to your selected length as possible.
+
       </div>
+
 
     </section>
 
 
-    <!-- STEP 3 -->
+
+    <!-- =====================================
+         STEP 3
+         ===================================== -->
+
     <section class="card">
 
+
       <div class="card-header">
-        <h2>Choose an Atmosphere</h2>
-        <div class="step-label">Step 3</div>
+
+        <h2>
+          Choose an Atmosphere
+        </h2>
+
+        <div class="step-label">
+          Step 3
+        </div>
+
       </div>
 
+
       <div class="small">
-        Pick the visual style you would like behind your marathon.
+
+        Pick the visual style you would like behind
+        your marathon.
+
       </div>
+
 
       <div
         class="background-options"
         id="backgroundOptions"
       >
 
+
         <label>
+
           <input
             type="radio"
             name="background"
             value="Dark screen only"
             checked
           />
-          <span>Dark Screen</span>
+
+          <span>
+            Dark Screen
+          </span>
+
         </label>
 
+
         <label>
+
           <input
             type="radio"
             name="background"
             value="Fireplace / cozy room"
           />
-          <span>Fireplace / Cozy Room</span>
+
+          <span>
+            Fireplace / Cozy Room
+          </span>
+
         </label>
 
+
         <label>
+
           <input
             type="radio"
             name="background"
             value="Rainy night window"
           />
-          <span>Rainy Night Window</span>
+
+          <span>
+            Rainy Night Window
+          </span>
+
         </label>
 
+
         <label>
+
           <input
             type="radio"
             name="background"
             value="Vintage theater ambience"
           />
-          <span>Vintage Theater</span>
+
+          <span>
+            Vintage Theater
+          </span>
+
         </label>
 
+
         <label>
+
           <input
             type="radio"
             name="background"
             value="Starfield / space loop"
           />
-          <span>Starfield / Space</span>
+
+          <span>
+            Starfield / Space
+          </span>
+
         </label>
 
+
       </div>
 
+
       <div class="small">
-        Final visuals may vary depending on the background footage available.
+
+        Final visuals may vary depending on the
+        background footage available.
+
       </div>
+
 
     </section>
 
 
-    <!-- STEP 4 -->
+
+    <!-- =====================================
+         STEP 4
+         ===================================== -->
+
     <section class="card">
 
+
       <div class="card-header">
-        <h2>Submit Your Marathon Request</h2>
-        <div class="step-label">Step 4</div>
+
+        <h2>
+          Submit Your Marathon Request
+        </h2>
+
+        <div class="step-label">
+          Step 4
+        </div>
+
       </div>
+
 
       <div class="form-grid">
 
+
         <div>
+
           <label
             class="field-label"
             for="senderName"
@@ -746,14 +1196,18 @@
             Name or nickname (optional)
           </label>
 
+
           <input
             id="senderName"
             type="text"
             placeholder="Example: Mary from Seattle"
           />
+
         </div>
 
+
         <div>
+
           <label
             class="field-label"
             for="userTitle"
@@ -761,47 +1215,79 @@
             Marathon title idea (optional)
           </label>
 
+
           <input
             id="userTitle"
             type="text"
             placeholder="Example: Frontier Trails & Fort Laramie Nights"
           />
+
         </div>
+
 
       </div>
 
 
       <div class="actions">
 
-        <button id="buildBtn">
+
+        <button
+          id="buildBtn"
+          type="button"
+        >
           CREATE MY MARATHON
         </button>
 
-        <button id="clearBtn">
+
+        <button
+          id="clearBtn"
+          type="button"
+        >
           CLEAR SELECTION
         </button>
 
-        <button id="sendBtn">
+
+        <button
+          id="sendBtn"
+          type="button"
+        >
           SEND MARATHON REQUEST
         </button>
 
+
       </div>
 
 
-      <div id="status"></div>
+      <div id="status">
+        Loading Golden Radio Hour library…
+      </div>
 
-      <textarea id="playlistOutput"></textarea>
+
+      <textarea
+        id="playlistOutput"
+      ></textarea>
+
 
       <div class="small bottom-note">
+
         Create your marathon first, then send the request.
-        Your selected programs, length, atmosphere, title idea and generated playlist
-        will be included automatically.
+        Your selected programs, length, atmosphere,
+        title idea and generated playlist will be
+        included automatically.
+
       </div>
+
 
     </section>
 
+
   </div>
 
+
+
+  <!-- =====================================
+       HIDDEN SUBMISSION FORM
+       ===================================== -->
 
   <form
     id="sendForm"
@@ -809,6 +1295,7 @@
     method="POST"
     style="display:none;"
   >
+
     <input
       type="hidden"
       name="playlist"
@@ -844,753 +1331,781 @@
       name="background_choice"
       id="backgroundField"
     />
+
   </form>
 
 
+
   <script>
-    let library = [];
-    let targetSeconds = 12 * 3600;
 
-    const showsContainer =
-      document.getElementById("showsContainer");
-
-    const playlistOutput =
-      document.getElementById("playlistOutput");
-
-    const statusElem =
-      document.getElementById("status");
-
-    const sendForm =
-      document.getElementById("sendForm");
-
-    const playlistField =
-      document.getElementById("playlistField");
-
-    const showsField =
-      document.getElementById("showsField");
-
-    const hoursField =
-      document.getElementById("hoursField");
-
-    const senderNameField =
-      document.getElementById("senderNameField");
-
-    const userTitleField =
-      document.getElementById("userTitleField");
-
-    const backgroundField =
-      document.getElementById("backgroundField");
+    (() => {
 
 
-    const allowedShows = [
-      "BBC Collection",
-      "Beyond Midnight",
-      "Boston Blackie",
-      "Box 13",
-      "Broadway Is My Beat",
-      "Candy Matson",
-      "Casey, Crime Photographer",
-      "CBC Mystery Theatre",
-      "CBS Radio Mystery Theater",
-      "CBS Radio Workshop",
-      "Crime Classics",
-      "Crisis",
-      "Damon Runyon Theater",
-      "Dangerous Assignment",
-      "Dangerously Yours",
-      "Dark Fantasy",
-      "Dimension X",
-      "Dr. Christian",
-      "Dr. Kildare",
-      "Dragnet",
-      "Father Knows Best",
-      "Fibber McGee and Molly",
-      "Fort Laramie",
-      "Frontier Gentleman",
-      "Gunsmoke",
-      "Have Gun, Will Travel",
-      "Horror Stories",
-      "Inner Sanctum Mysteries",
-      "Jeff Regan",
-      "Let George Do It",
-      "Let George Sherlock Holmes Mash",
-      "Lights Out",
-      "Lux Radio Theatre",
-      "Man Called X",
-      "Michael Shayne",
-      "Molle Mystery Theater",
-      "Mystery Is My Hobby",
-      "Nero Wolfe",
-      "Nick Carter, Master Detective",
-      "Obsession",
-      "Pat Novak, For Hire",
-      "Philip Marlowe",
-      "Philo Vance",
-      "Ray Bradbury Theater",
-      "Red Skelton Show",
-      "Rogues Gallery",
-      "Roy Rogers Show",
-      "Sam Spade",
-      "Screen Directors Playhouse",
-      "Screen Guild Theater",
-      "Sears Radio Theater",
-      "Sherlock Holmes",
-      "Stories of Sherlock Holmes",
-      "Strange Wills",
-      "Summer Spook Radio Dramas",
-      "Suspense",
-      "Tales of the Texas Rangers",
-      "The Falcon",
-      "The Great Gildersleeve",
-      "The Jack Benny Program",
-      "The Mysterious Traveler",
-      "The New Adventures of Sherlock Holmes",
-      "The Saint",
-      "The Whistler",
-      "Theater Five",
-      "This Is Your FBI",
-      "Twilight Zone Radio Dramas",
-      "Vincent Price as The Saint",
-      "Weird Circle",
-      "X Minus One",
-      "Yours Truly, Johnny Dollar",
-      "Yours Truly, Johnny Dollar (Bob Bailey)",
-      "Yours Truly, Johnny Dollar (Edmond O'Brien)",
-      "Yours Truly, Johnny Dollar (John Lund)",
-      "Yours Truly, Johnny Dollar (Mandel Kramer)",
-      "Yours Truly, Johnny Dollar (Robert Readick)"
-    ];
+      /* =========================================
+         NEW GOLDEN RADIO HOUR LIBRARY
+         ========================================= */
+
+      const LIBRARY_URL =
+        "https://raw.githubusercontent.com/WonderMan33/golden-radio-mp3/main/shows.json";
 
 
-    function setStatus(msg) {
-      statusElem.textContent =
-        msg || "";
-    }
+      let library = [];
+
+      let targetSeconds =
+        12 * 3600;
 
 
-    function shuffle(array) {
 
-      for (
-        let i = array.length - 1;
-        i > 0;
-        i--
-      ) {
+      /* =========================================
+         ELEMENTS
+         ========================================= */
 
-        const j =
-          Math.floor(
-            Math.random() *
-            (i + 1)
-          );
-
-        [
-          array[i],
-          array[j]
-        ] = [
-          array[j],
-          array[i]
-        ];
-
-      }
-
-    }
-
-
-    function secondsToHMS(sec) {
-
-      sec =
-        Math.max(
-          0,
-          Math.floor(sec)
-        );
-
-      const h =
-        String(
-          Math.floor(
-            sec / 3600
-          )
-        ).padStart(
-          2,
-          "0"
-        );
-
-      const m =
-        String(
-          Math.floor(
-            (sec % 3600) /
-            60
-          )
-        ).padStart(
-          2,
-          "0"
-        );
-
-      const s =
-        String(
-          sec % 60
-        ).padStart(
-          2,
-          "0"
-        );
-
-      return `${h}:${m}:${s}`;
-    }
-
-
-    function normalize(str) {
-
-      return (
-        str ||
-        ""
-      )
-      .toLowerCase()
-      .replace(
-        /[^a-z0-9]+/g,
-        " "
-      )
-      .replace(
-        /\s+/g,
-        " "
-      )
-      .trim();
-
-    }
-
-
-    function epMatchesSelection(
-      ep,
-      selectedCleanNames
-    ) {
-
-      const showNorm =
-        normalize(
-          ep.show
-        );
-
-      const titleNorm =
-        normalize(
-          ep.episode_title
-        );
-
-      const pathNorm =
-        normalize(
-          ep.file_path ||
-          ep.path ||
-          ""
+      const showsContainer =
+        document.getElementById(
+          "showsContainer"
         );
 
 
-      for (
-        const cleanName
-        of selectedCleanNames
-      ) {
-
-        const cleanNorm =
-          normalize(
-            cleanName
-          );
+      const playlistOutput =
+        document.getElementById(
+          "playlistOutput"
+        );
 
 
-        if (
-          !showNorm &&
-          !titleNorm &&
-          !pathNorm
-        ) {
-
-          continue;
-
-        }
+      const statusElem =
+        document.getElementById(
+          "status"
+        );
 
 
-        if (
-          (
-            showNorm &&
-            showNorm.includes(
-              cleanNorm
-            )
-          )
-          ||
-          (
-            titleNorm &&
-            titleNorm.includes(
-              cleanNorm
-            )
-          )
-          ||
-          (
-            pathNorm &&
-            pathNorm.includes(
-              cleanNorm
-            )
-          )
-        ) {
-
-          return true;
-
-        }
+      const buildBtn =
+        document.getElementById(
+          "buildBtn"
+        );
 
 
-        if (
-          cleanNorm.startsWith(
-            "yours truly johnny dollar"
-          )
-        ) {
-
-          const base =
-            "yours truly johnny dollar";
-
-          const actorPart =
-            cleanNorm
-              .replace(
-                base,
-                ""
-              )
-              .trim();
+      const clearBtn =
+        document.getElementById(
+          "clearBtn"
+        );
 
 
-          const hasBase =
-            (
-              showNorm &&
-              showNorm.includes(
-                base
-              )
-            )
-            ||
-            (
-              titleNorm &&
-              titleNorm.includes(
-                base
-              )
-            )
-            ||
-            (
-              pathNorm &&
-              pathNorm.includes(
-                base
-              )
-            );
+      const sendBtn =
+        document.getElementById(
+          "sendBtn"
+        );
 
 
-          if (!hasBase) {
-            continue;
-          }
 
+      /* =========================================
+         STATUS
+         ========================================= */
 
-          if (!actorPart) {
+      function setStatus(message){
 
-            return true;
-
-          } else {
-
-            const actorTokens =
-              actorPart
-                .split(" ")
-                .filter(Boolean);
-
-            const lastName =
-              actorTokens[
-                actorTokens.length - 1
-              ];
-
-
-            if (
-              (
-                showNorm &&
-                showNorm.includes(
-                  lastName
-                )
-              )
-              ||
-              (
-                titleNorm &&
-                titleNorm.includes(
-                  lastName
-                )
-              )
-              ||
-              (
-                pathNorm &&
-                pathNorm.includes(
-                  lastName
-                )
-              )
-            ) {
-
-              return true;
-
-            }
-
-          }
-
-        }
-
-
-        if (
-          cleanNorm ===
-          "bbc collection"
-        ) {
-
-          if (
-            showNorm.includes(
-              "bbc"
-            )
-            ||
-            titleNorm.includes(
-              "bbc"
-            )
-            ||
-            pathNorm.includes(
-              "bbc"
-            )
-          ) {
-
-            return true;
-
-          }
-
-        }
+        statusElem.textContent =
+          message || "";
 
       }
 
 
-      return false;
-    }
+
+      /* =========================================
+         NORMALIZE NEW JSON RECORD
+         ========================================= */
+
+      function normalizeEpisode(track){
 
 
-    function buildShowsUI() {
+        if(!track){
 
-      showsContainer.innerHTML =
-        "";
-
-
-      const sorted =
-        [...allowedShows]
-          .sort(
-            (a,b) =>
-              a.localeCompare(b)
-          );
-
-
-      sorted.forEach(
-        show => {
-
-          const label =
-            document.createElement(
-              "label"
-            );
-
-
-          label.className =
-            "show-item";
-
-
-          const cb =
-            document.createElement(
-              "input"
-            );
-
-
-          cb.type =
-            "checkbox";
-
-
-          cb.value =
-            show;
-
-
-          const span =
-            document.createElement(
-              "span"
-            );
-
-
-          span.textContent =
-            show;
-
-
-          label.appendChild(
-            cb
-          );
-
-
-          label.appendChild(
-            span
-          );
-
-
-          showsContainer.appendChild(
-            label
-          );
+          return null;
 
         }
-      );
-
-    }
 
 
-    function getSelectedShows() {
-
-      return Array.from(
-
-        showsContainer
-          .querySelectorAll(
-            "input[type=checkbox]:checked"
+        const show =
+          (
+            track.showTitle ||
+            track.show ||
+            ""
           )
-
-      )
-      .map(
-        cb =>
-          cb.value
-      );
-
-    }
+          .toString()
+          .trim();
 
 
-    function getSelectedBackground() {
+        const title =
+          (
+            track.displayTitle ||
+            track.title ||
+            track.episode_title ||
+            ""
+          )
+          .toString()
+          .trim();
 
-      const checked =
-        document.querySelector(
-          "input[name='background']:checked"
+
+        const duration =
+          Number(
+            track.durationSeconds ??
+            track.duration_seconds ??
+            track.duration ??
+            0
+          );
+
+
+        const url =
+          (
+            track.url ||
+            track.file_path ||
+            track.path ||
+            ""
+          )
+          .toString()
+          .trim();
+
+
+        if(
+          !show ||
+          !title ||
+          !Number.isFinite(duration) ||
+          duration <= 0
+        ){
+
+          return null;
+
+        }
+
+
+        return {
+
+          show:
+            show,
+
+          episode_title:
+            title,
+
+          duration_seconds:
+            duration,
+
+          url:
+            url,
+
+          file_path:
+            url
+
+        };
+
+      }
+
+
+
+      /* =========================================
+         SORT TEXT
+         ========================================= */
+
+      function alphabeticalSort(
+        a,
+        b
+      ){
+
+        return a.localeCompare(
+          b,
+          undefined,
+          {
+            numeric:true,
+            sensitivity:"base"
+          }
         );
 
-
-      return checked
-        ? checked.value
-        : "Dark screen only";
-
-    }
+      }
 
 
-    function buildMarathon() {
 
-      const selectedClean =
-        getSelectedShows();
+      /* =========================================
+         GET AVAILABLE SHOWS
+         DIRECTLY FROM NEW JSON
+         ========================================= */
+
+      function getAvailableShows(){
 
 
-      if (
-        selectedClean.length === 0
-      ) {
+        return [
+          ...new Set(
 
-        setStatus(
-          "Please select at least one program."
+            library
+              .map(
+                episode =>
+                  episode.show
+              )
+              .filter(Boolean)
+
+          )
+        ]
+        .sort(
+          alphabeticalSort
         );
 
-        playlistOutput.value =
+      }
+
+
+
+      /* =========================================
+         BUILD SHOW CHECKBOXES
+         ========================================= */
+
+      function buildShowsUI(){
+
+
+        showsContainer.innerHTML =
           "";
 
-        return;
 
-      }
-
-
-      const pool =
-        library.filter(
-          ep =>
-            epMatchesSelection(
-              ep,
-              selectedClean
-            )
-        );
+        const shows =
+          getAvailableShows();
 
 
-      if (
-        pool.length === 0
-      ) {
+        if(
+          !shows.length
+        ){
 
-        setStatus(
-          "No episodes found for the selected programs."
-        );
+          showsContainer.innerHTML =
+            '<div class="small">No shows are currently available.</div>';
 
-        playlistOutput.value =
-          "";
-
-        return;
-
-      }
-
-
-      shuffle(
-        pool
-      );
-
-
-      const chosen =
-        [];
-
-
-      let total =
-        0;
-
-
-      for (
-        const ep
-        of pool
-      ) {
-
-        if (
-          total +
-          ep.duration_seconds >
-          targetSeconds +
-          5 * 60
-        ) {
-
-          continue;
+          return;
 
         }
 
 
-        chosen.push(
-          ep
-        );
+        shows.forEach(
+          show => {
 
 
-        total +=
-          ep.duration_seconds;
-
-
-        if (
-          total >=
-          targetSeconds
-        ) {
-
-          break;
-
-        }
-
-      }
-
-
-      if (
-        chosen.length === 0
-      ) {
-
-        setStatus(
-          "Could not fit any episodes into the selected length."
-        );
-
-        playlistOutput.value =
-          "";
-
-        return;
-
-      }
-
-
-      let out =
-        "";
-
-
-      let running =
-        0;
-
-
-      chosen.forEach(
-        (ep,index) => {
-
-          const start =
-            secondsToHMS(
-              running
-            );
-
-
-          out +=
-            `${index + 1}. ${start} ${ep.show} - ${ep.episode_title}\n`;
-
-
-          running +=
-            ep.duration_seconds;
-
-        }
-      );
-
-
-      out +=
-        `\nTotal duration: ${secondsToHMS(running)}\n`;
-
-
-      playlistOutput.value =
-        out.trim();
-
-
-      setStatus(
-        `Marathon created (~${secondsToHMS(running)}). Click "SEND MARATHON REQUEST" when you're ready.`
-      );
-
-    }
-
-
-    document
-      .querySelectorAll(
-        ".target-buttons button"
-      )
-      .forEach(
-        btn => {
-
-          btn.addEventListener(
-            "click",
-            () => {
-
-              document
-                .querySelectorAll(
-                  ".target-buttons button"
-                )
-                .forEach(
-                  b =>
-                    b.classList.remove(
-                      "active"
-                    )
-                );
-
-
-              btn.classList.add(
-                "active"
+            const label =
+              document.createElement(
+                "label"
               );
 
 
-              const hours =
-                parseInt(
-                  btn.dataset.hours,
-                  10
-                ) ||
-                12;
+            label.className =
+              "show-item";
 
 
-              targetSeconds =
-                hours *
-                3600;
+            const checkbox =
+              document.createElement(
+                "input"
+              );
 
-            }
+
+            checkbox.type =
+              "checkbox";
+
+
+            checkbox.value =
+              show;
+
+
+            const span =
+              document.createElement(
+                "span"
+              );
+
+
+            span.textContent =
+              show;
+
+
+            label.appendChild(
+              checkbox
+            );
+
+
+            label.appendChild(
+              span
+            );
+
+
+            showsContainer.appendChild(
+              label
+            );
+
+
+          }
+        );
+
+      }
+
+
+
+      /* =========================================
+         SELECTED SHOWS
+         ========================================= */
+
+      function getSelectedShows(){
+
+
+        return Array.from(
+
+          showsContainer
+            .querySelectorAll(
+              'input[type="checkbox"]:checked'
+            )
+
+        )
+        .map(
+          checkbox =>
+            checkbox.value
+        );
+
+      }
+
+
+
+      /* =========================================
+         BACKGROUND
+         ========================================= */
+
+      function getSelectedBackground(){
+
+
+        const checked =
+          document.querySelector(
+            'input[name="background"]:checked'
           );
 
+
+        return checked
+          ?
+            checked.value
+          :
+            "Dark screen only";
+
+      }
+
+
+
+      /* =========================================
+         SHUFFLE
+         ========================================= */
+
+      function shuffle(array){
+
+
+        for(
+          let i =
+            array.length - 1;
+
+          i > 0;
+
+          i--
+        ){
+
+
+          const j =
+            Math.floor(
+              Math.random() *
+              (i + 1)
+            );
+
+
+          [
+            array[i],
+            array[j]
+          ] =
+          [
+            array[j],
+            array[i]
+          ];
+
         }
-      );
 
 
-    document
-      .getElementById(
-        "buildBtn"
-      )
-      .addEventListener(
+        return array;
+
+      }
+
+
+
+      /* =========================================
+         TIME FORMAT
+         ========================================= */
+
+      function secondsToHMS(seconds){
+
+
+        seconds =
+          Math.max(
+            0,
+            Math.floor(
+              seconds
+            )
+          );
+
+
+        const hours =
+          String(
+            Math.floor(
+              seconds / 3600
+            )
+          )
+          .padStart(
+            2,
+            "0"
+          );
+
+
+        const minutes =
+          String(
+            Math.floor(
+              (seconds % 3600) /
+              60
+            )
+          )
+          .padStart(
+            2,
+            "0"
+          );
+
+
+        const secs =
+          String(
+            seconds % 60
+          )
+          .padStart(
+            2,
+            "0"
+          );
+
+
+        return (
+          hours +
+          ":" +
+          minutes +
+          ":" +
+          secs
+        );
+
+      }
+
+
+
+      /* =========================================
+         BUILD MARATHON
+         ========================================= */
+
+      function buildMarathon(){
+
+
+        const selectedShows =
+          getSelectedShows();
+
+
+        if(
+          !selectedShows.length
+        ){
+
+          playlistOutput.value =
+            "";
+
+
+          setStatus(
+            "Please select at least one program."
+          );
+
+
+          return;
+
+        }
+
+
+        const selectedSet =
+          new Set(
+            selectedShows
+          );
+
+
+        /*
+         * Because the show choices are now
+         * generated directly from shows.json,
+         * exact show matching is all we need.
+         */
+
+        const pool =
+          library.filter(
+            episode =>
+              selectedSet.has(
+                episode.show
+              )
+          );
+
+
+        if(
+          !pool.length
+        ){
+
+          playlistOutput.value =
+            "";
+
+
+          setStatus(
+            "No episodes were found for the selected programs."
+          );
+
+
+          return;
+
+        }
+
+
+        const shuffledPool =
+          shuffle(
+            [...pool]
+          );
+
+
+        const chosen =
+          [];
+
+
+        let total =
+          0;
+
+
+        /*
+         * Allow up to five minutes over the
+         * requested duration, matching the
+         * behavior of the previous builder.
+         */
+
+        const maximum =
+          targetSeconds +
+          (5 * 60);
+
+
+        for(
+          const episode
+          of shuffledPool
+        ){
+
+
+          const duration =
+            episode.duration_seconds;
+
+
+          if(
+            !Number.isFinite(
+              duration
+            ) ||
+            duration <= 0
+          ){
+
+            continue;
+
+          }
+
+
+          if(
+            total +
+            duration >
+            maximum
+          ){
+
+            continue;
+
+          }
+
+
+          chosen.push(
+            episode
+          );
+
+
+          total +=
+            duration;
+
+
+          if(
+            total >=
+            targetSeconds
+          ){
+
+            break;
+
+          }
+
+        }
+
+
+        if(
+          !chosen.length
+        ){
+
+          playlistOutput.value =
+            "";
+
+
+          setStatus(
+            "Could not fit any episodes into the selected marathon length."
+          );
+
+
+          return;
+
+        }
+
+
+        let output =
+          "";
+
+
+        let runningTime =
+          0;
+
+
+        chosen.forEach(
+          (
+            episode,
+            index
+          ) => {
+
+
+            const start =
+              secondsToHMS(
+                runningTime
+              );
+
+
+            output +=
+              (
+                index + 1
+              ) +
+              ". " +
+              start +
+              " " +
+              episode.show +
+              " - " +
+              episode.episode_title +
+              "\n";
+
+
+            runningTime +=
+              episode.duration_seconds;
+
+
+          }
+        );
+
+
+        output +=
+          "\nTotal duration: " +
+          secondsToHMS(
+            runningTime
+          );
+
+
+        playlistOutput.value =
+          output.trim();
+
+
+        setStatus(
+          "Marathon created (~" +
+          secondsToHMS(
+            runningTime
+          ) +
+          '). Click "SEND MARATHON REQUEST" when you are ready.'
+        );
+
+      }
+
+
+
+      /* =========================================
+         TARGET LENGTH BUTTONS
+         ========================================= */
+
+      document
+        .querySelectorAll(
+          ".target-buttons button"
+        )
+        .forEach(
+          button => {
+
+
+            button.addEventListener(
+              "click",
+              () => {
+
+
+                document
+                  .querySelectorAll(
+                    ".target-buttons button"
+                  )
+                  .forEach(
+                    item =>
+                      item.classList.remove(
+                        "active"
+                      )
+                  );
+
+
+                button.classList.add(
+                  "active"
+                );
+
+
+                const hours =
+                  parseInt(
+                    button.dataset.hours,
+                    10
+                  ) ||
+                  12;
+
+
+                targetSeconds =
+                  hours *
+                  3600;
+
+
+              }
+            );
+
+
+          }
+        );
+
+
+
+      /* =========================================
+         CREATE MARATHON
+         ========================================= */
+
+      buildBtn.addEventListener(
         "click",
         buildMarathon
       );
 
 
-    document
-      .getElementById(
-        "clearBtn"
-      )
-      .addEventListener(
+
+      /* =========================================
+         CLEAR
+         ========================================= */
+
+      clearBtn.addEventListener(
         "click",
         () => {
 
+
           showsContainer
             .querySelectorAll(
-              "input[type=checkbox]"
+              'input[type="checkbox"]'
             )
             .forEach(
-              cb =>
-                cb.checked =
-                  false
+              checkbox => {
+
+                checkbox.checked =
+                  false;
+
+              }
             );
 
 
@@ -1599,52 +2114,60 @@
 
 
           setStatus(
-            ""
+            `Library ready. ${library.length.toLocaleString()} episodes available.`
           );
+
 
         }
       );
 
 
-    document
-      .getElementById(
-        "sendBtn"
-      )
-      .addEventListener(
+
+      /* =========================================
+         SEND REQUEST
+         ========================================= */
+
+      sendBtn.addEventListener(
         "click",
         async () => {
 
-          const text =
+
+          const playlist =
             playlistOutput
               .value
               .trim();
 
 
-          if (!text) {
+          if(
+            !playlist
+          ){
 
             setStatus(
               'Nothing to send yet. Click "CREATE MY MARATHON" first.'
             );
+
 
             return;
 
           }
 
 
-          const selectedClean =
+          const selectedShows =
             getSelectedShows();
 
 
-          const activeBtn =
+          const activeLengthButton =
             document.querySelector(
               ".target-buttons button.active"
             );
 
 
           const hours =
-            activeBtn
-              ? activeBtn.dataset.hours
-              : "12";
+            activeLengthButton
+              ?
+                activeLengthButton.dataset.hours
+              :
+                "12";
 
 
           const senderName =
@@ -1672,10 +2195,10 @@
           const payload = {
 
             playlist:
-              text,
+              playlist,
 
             shows_selected:
-              selectedClean.join(
+              selectedShows.join(
                 ", "
               ),
 
@@ -1699,97 +2222,125 @@
           );
 
 
-          try {
+          try{
 
-            const res =
+
+            const response =
               await fetch(
                 "https://formspree.io/f/mqarbnyg",
                 {
+
                   method:
                     "POST",
 
                   headers: {
+
                     "Accept":
                       "application/json",
 
                     "Content-Type":
                       "application/json"
+
                   },
 
                   body:
                     JSON.stringify(
                       payload
                     )
+
                 }
               );
 
 
-            let data =
+            let responseData =
               null;
 
 
-            try {
+            try{
 
-              data =
-                await res.json();
+              responseData =
+                await response.json();
 
-            } catch (e) {
+            }
 
-              /* Ignore JSON parse errors */
+            catch(error){
+
+              /* Response did not contain JSON */
 
             }
 
 
-            if (
-              res.ok
-            ) {
+            if(
+              response.ok
+            ){
+
 
               setStatus(
                 "Sent! Your Golden Radio Hour marathon request has been submitted."
               );
 
-            } else {
 
-              let msg =
+            }
+
+            else{
+
+
+              let message =
                 "There was a problem sending your request.";
 
 
-              if (
-                data &&
-                data.errors &&
-                data.errors.length > 0
-              ) {
+              if(
+                responseData &&
+                Array.isArray(
+                  responseData.errors
+                ) &&
+                responseData.errors.length
+              ){
 
-                msg +=
+
+                message +=
                   " " +
-                  data.errors
+                  responseData.errors
                     .map(
-                      e =>
-                        e.message ||
+                      error =>
+                        error.message ||
                         ""
                     )
                     .join(
                       " "
                     );
 
-              } else {
 
-                msg +=
-                  ` (HTTP ${res.status})`;
+              }
+
+              else{
+
+
+                message +=
+                  " (HTTP " +
+                  response.status +
+                  ")";
+
 
               }
 
 
               setStatus(
-                msg
+                message
               );
+
 
             }
 
-          } catch (err) {
+
+          }
+
+          catch(error){
+
 
             console.error(
-              err
+              "Marathon submission error:",
+              error
             );
 
 
@@ -1797,52 +2348,128 @@
               "Network error while sending your request."
             );
 
+
           }
+
 
         }
       );
 
 
-    fetch(
-      "library.json"
-    )
-    .then(
-      r =>
-        r.json()
-    )
-    .then(
-      data => {
 
-        library =
-          data ||
-          [];
+      /* =========================================
+         LOAD NEW SHOWS.JSON
+         ========================================= */
 
+      fetch(
+        LIBRARY_URL,
+        {
+          cache:
+            "no-store"
+        }
+      )
 
-        setStatus(
-          `Library loaded. ${library.length.toLocaleString()} episodes available.`
-        );
+      .then(
+        response => {
 
 
-        buildShowsUI();
+          if(
+            !response.ok
+          ){
 
-      }
-    )
-    .catch(
-      err => {
+            throw new Error(
+              "HTTP " +
+              response.status
+            );
 
-        console.error(
-          err
-        );
+          }
 
 
-        setStatus(
-          "Error loading library.json. Make sure it is in the same folder as this page."
-        );
+          return response.json();
 
-      }
-    );
+
+        }
+      )
+
+      .then(
+        data => {
+
+
+          const rawLibrary =
+            Array.isArray(
+              data
+            )
+              ?
+                data
+              :
+                [];
+
+
+          library =
+            rawLibrary
+              .map(
+                normalizeEpisode
+              )
+              .filter(Boolean);
+
+
+          if(
+            !library.length
+          ){
+
+            throw new Error(
+              "No usable episodes were found in shows.json."
+            );
+
+          }
+
+
+          buildShowsUI();
+
+
+          setStatus(
+            `Library ready. ${library.length.toLocaleString()} episodes available.`
+          );
+
+
+          console.log(
+            "Golden Radio Hour Marathon Builder loaded:",
+            library.length,
+            "episodes from shows.json"
+          );
+
+
+        }
+      )
+
+      .catch(
+        error => {
+
+
+          console.error(
+            "Golden Radio Hour Marathon Builder library error:",
+            error
+          );
+
+
+          showsContainer.innerHTML =
+            '<div class="small">The show library could not be loaded.</div>';
+
+
+          setStatus(
+            "The Golden Radio Hour library could not be loaded."
+          );
+
+
+        }
+      );
+
+
+    })();
 
   </script>
 
+
 </body>
+
 </html>
