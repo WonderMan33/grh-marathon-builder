@@ -1,0 +1,70 @@
+name: Sync Marathon Library
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 9 * * *'
+  push:
+    paths:
+      - '.github/workflows/sync-library.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-library:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out builder
+        uses: actions/checkout@v4
+
+      - name: Download current Golden Radio Hour catalog
+        run: curl --fail --location --retry 3 --output /tmp/shows.json https://raw.githubusercontent.com/WonderMan33/golden-radio-mp3/main/shows.json
+
+      - name: Build lightweight marathon catalog
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+
+          source = json.loads(Path('/tmp/shows.json').read_text(encoding='utf-8'))
+          compact = []
+
+          for track in source:
+              show = str(track.get('showTitle') or track.get('show') or '').strip()
+              title = str(track.get('displayTitle') or track.get('title') or track.get('episode_title') or '').strip()
+              duration = track.get('durationSeconds', track.get('duration_seconds', track.get('duration', 0)))
+              url = str(track.get('url') or track.get('file_path') or track.get('path') or '').strip()
+
+              try:
+                  duration = float(duration or 0)
+              except (TypeError, ValueError):
+                  duration = 0
+
+              if not show or not title or duration <= 0:
+                  continue
+
+              compact.append({
+                  'show': show,
+                  'episode_title': title,
+                  'duration_seconds': duration,
+                  'url': url,
+              })
+
+          Path('library.json').write_text(
+              json.dumps(compact, ensure_ascii=False, separators=(',', ':')),
+              encoding='utf-8'
+          )
+          print(f'Wrote {len(compact):,} usable episodes to library.json')
+
+      - name: Commit catalog when changed
+        run: |
+          if git diff --quiet -- library.json; then
+            echo 'library.json is already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add library.json
+          git commit -m 'Sync lightweight marathon library'
+          git push
