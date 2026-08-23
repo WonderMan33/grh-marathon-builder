@@ -57,14 +57,30 @@ jobs:
           )
           print(f'Wrote {len(compact):,} usable episodes to library.json')
 
-      - name: Commit catalog when changed
+      - name: Point builder at lightweight local catalog
+        shell: python
         run: |
-          if git diff --quiet -- library.json; then
-            echo 'library.json is already current.'
+          from pathlib import Path
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          old = 'https://raw.githubusercontent.com/WonderMan33/golden-radio-mp3/main/shows.json'
+          if old in text:
+              text = text.replace(old, './library.json')
+              path.write_text(text, encoding='utf-8')
+              print('Updated index.html to use ./library.json')
+          elif './library.json' in text:
+              print('index.html already uses ./library.json')
+          else:
+              raise SystemExit('Could not locate expected LIBRARY_URL in index.html')
+
+      - name: Commit repair when changed
+        run: |
+          if git diff --quiet -- library.json index.html; then
+            echo 'Builder and library are already current.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add library.json
+          git add library.json index.html
           git commit -m 'Sync lightweight marathon library'
           git push
