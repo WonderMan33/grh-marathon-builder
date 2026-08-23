@@ -34,16 +34,15 @@ jobs:
               show = str(track.get('showTitle') or track.get('show') or '').strip()
               title = str(track.get('displayTitle') or track.get('title') or track.get('episode_title') or '').strip()
               raw_duration = track.get('durationSeconds', track.get('duration_seconds', track.get('duration', 0)))
-              url = str(track.get('url') or track.get('file_path') or track.get('path') or '').strip()
 
               try:
                   duration = float(raw_duration or 0)
               except (TypeError, ValueError):
                   duration = 0
 
-              # The current master catalog intentionally leaves many durations null.
-              # Keep those episodes usable in the listener builder with a conservative
-              # 30-minute planning estimate; exact-duration records retain their value.
+              # The master catalog currently leaves many durations null. The
+              # listener builder uses 30 minutes as a planning estimate only
+              # when an exact duration is unavailable.
               if duration <= 0:
                   duration = 1800
 
@@ -54,7 +53,6 @@ jobs:
                   'show': show,
                   'episode_title': title,
                   'duration_seconds': duration,
-                  'url': url,
               })
 
           Path('library.json').write_text(
