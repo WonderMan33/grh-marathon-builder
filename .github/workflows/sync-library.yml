@@ -33,15 +33,21 @@ jobs:
           for track in source:
               show = str(track.get('showTitle') or track.get('show') or '').strip()
               title = str(track.get('displayTitle') or track.get('title') or track.get('episode_title') or '').strip()
-              duration = track.get('durationSeconds', track.get('duration_seconds', track.get('duration', 0)))
+              raw_duration = track.get('durationSeconds', track.get('duration_seconds', track.get('duration', 0)))
               url = str(track.get('url') or track.get('file_path') or track.get('path') or '').strip()
 
               try:
-                  duration = float(duration or 0)
+                  duration = float(raw_duration or 0)
               except (TypeError, ValueError):
                   duration = 0
 
-              if not show or not title or duration <= 0:
+              # The current master catalog intentionally leaves many durations null.
+              # Keep those episodes usable in the listener builder with a conservative
+              # 30-minute planning estimate; exact-duration records retain their value.
+              if duration <= 0:
+                  duration = 1800
+
+              if not show or not title:
                   continue
 
               compact.append({
@@ -55,7 +61,7 @@ jobs:
               json.dumps(compact, ensure_ascii=False, separators=(',', ':')),
               encoding='utf-8'
           )
-          print(f'Wrote {len(compact):,} usable episodes to library.json')
+          print(f'Wrote {len(compact):,} episodes to library.json')
 
       - name: Point builder at lightweight local catalog
         shell: python
